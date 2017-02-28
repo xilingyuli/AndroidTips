@@ -3,50 +3,78 @@ package com.xilingyuli.markdown;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.widget.EditText;
+
+import java.util.regex.Pattern;
 
 /**
  * Created by xilingyuli on 2017/2/28.
  */
 
 public class MarkDownEditorView extends EditText {
+    Pattern orderPattern = Pattern.compile("^[0-9]+\\. ");
     public MarkDownEditorView(Context context) {
         super(context);
+        init();
     }
 
     public MarkDownEditorView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public MarkDownEditorView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public MarkDownEditorView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        init();
+    }
+
+    private void init()
+    {
+        this.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //新增字符
+                if(i1==0)
+                {
+                    String str = charSequence+"";
+                    //新增的是回车符
+                    if(!str.isEmpty()&&str.charAt(i)=='\n')
+                    {
+                        String lastLine = getLastLine();
+                        if(lastLine.startsWith("* ")) {
+                            MarkDownEditorView.this.append("* ");
+                        }
+                        if(orderPattern.matcher(lastLine).lookingAt())
+                        {
+                            int num = Integer.parseInt(lastLine.substring(0, lastLine.indexOf(".")))+1;
+                            MarkDownEditorView.this.append(num+". ");
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     public void header(int level) {
-        String source = getText()+"";
-        int begin = getLineBeginIndex();
-        int end = getNextLineBeginIndex();
-
-        String result = source.substring(begin, end);
         String newStr = "######".substring(0, level) + " ";
-        //取消标题
-        if(result.startsWith(newStr))
-            result = result.replace(newStr,"");
-        //增加标题
-        else
-        {
-            result = newStr + result;
-            if(begin>0 && source.charAt(begin-1)!='\n')
-                result = "\n" + result;
-        }
-        getText().replace(begin, end, result);
-        this.setSelection(begin, end);
+        lineStyle(newStr);
     }
 
     public void insertLine()
@@ -77,6 +105,37 @@ public class MarkDownEditorView extends EditText {
         textStyle("~~");
     }
 
+    public void unordered()
+    {
+        lineStyle("* ");
+    }
+
+    public void ordered()
+    {
+        String source = getText()+"";
+        int begin = getLineBeginIndex();
+        int end = getNextLineBeginIndex();
+        String result = source.substring(begin, end);
+
+        //取消标号
+        if(orderPattern.matcher(result).lookingAt())
+        {
+            result = result.replaceFirst("[0-9]+\\. ","");
+        }
+        //添加标号
+        else
+        {
+            int num = 1;
+            String lastLine = getLastLine();
+            if (orderPattern.matcher(lastLine).lookingAt()) {
+                num = Integer.parseInt(lastLine.substring(0, lastLine.indexOf(".")))+1;
+            }
+            result = num+". "+result;
+        }
+        getText().replace(begin, end, result);
+        this.setSelection(begin, begin + result.length());
+    }
+
     private void textStyle(String str)
     {
         int num = str.length();
@@ -85,29 +144,55 @@ public class MarkDownEditorView extends EditText {
         int end = getSelectionEnd();
 
         String result = source.substring(start, end);
-        //取消
+        //取消样式
         if(source.substring(0,start).endsWith(str) && source.substring(end).startsWith(str)) {
             getText().replace(start - num, end + num, result);
             this.setSelection(start - num, end - num);
         }
-        //添加
+        //添加样式
         else {
             getText().replace(start, end, str + result + str);
             this.setSelection(start + num);
         }
     }
 
+    private void lineStyle(String str)
+    {
+        String source = getText()+"";
+        int begin = getLineBeginIndex();
+        int end = getNextLineBeginIndex();
+
+        String result = source.substring(begin, end);
+
+        //取消样式
+        if(result.startsWith(str))
+            result = result.replace(str,"");
+        //添加样式
+        else
+            result = str + result;
+        getText().replace(begin, end, result);
+        this.setSelection(begin, begin + result.length());
+    }
+
+    public String getLastLine()
+    {
+        String source = getText()+"";
+        int end = source.substring(0,getSelectionStart()).lastIndexOf('\n')+1;
+        int begin = (end==0?-1:source.substring(0, end-1).lastIndexOf('\n'))+1;
+        return source.substring(begin, end);
+    }
+
     public int getLineBeginIndex()
     {
         String source = getText()+"";
-        int lastEnter = source.substring(0,getSelectionStart()).lastIndexOf('\n');
-        return lastEnter==-1 ? 0 : lastEnter+1;
+        return source.substring(0,getSelectionStart()).lastIndexOf('\n')+1;
     }
 
     public int getNextLineBeginIndex()
     {
         String source = getText()+"";
         int nextEnter = source.indexOf('\n',getSelectionStart());
-        return nextEnter==-1 ? source.length() : nextEnter+1;
+        return nextEnter==-1?source.length():nextEnter+1;
     }
+
 }

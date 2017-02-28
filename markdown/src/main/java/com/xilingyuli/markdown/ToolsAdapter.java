@@ -85,6 +85,10 @@ public class ToolsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             editor.italic();
         else if (tag == R.drawable.ic_format_strikethrough)
             editor.strikethrough();
+        else if (tag == R.drawable.ic_format_list_unordered)
+            editor.unordered();
+        else if (tag == R.drawable.ic_format_list_ordered)
+            editor.ordered();
     }
 
     private class ToolsViewHolder extends RecyclerView.ViewHolder

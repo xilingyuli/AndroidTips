@@ -92,14 +92,12 @@ public class EditorActivity extends BaseActivity {
                 }
                 else {
                     tools.setVisibility(View.VISIBLE);
-                    //editorView.requestFocus();
-                    //imm.showSoftInput(editorView, 0);
                 }
-                //imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                //显示/隐藏软键盘，在onPageSelected中调用会引起滑动动画冲突
                 if (state == ViewPager.SCROLL_STATE_IDLE)
                 {
                     editorView.requestFocus();
