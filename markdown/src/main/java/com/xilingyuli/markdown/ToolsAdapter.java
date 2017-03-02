@@ -2,6 +2,7 @@ package com.xilingyuli.markdown;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,11 +98,11 @@ public class ToolsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             editor.ordered();
         else if (tag == R.drawable.ic_insert_image) {
             if (listener!=null)
-                editor.insertImage(listener.onPreInsertImage());
+                listener.onPreInsertImage();
         }
         else if (tag == R.drawable.ic_insert_link) {
             if (listener!=null)
-                editor.insertLink(listener.onPreInsertLink());
+                listener.onPreInsertLink();
         }
         else if (tag == R.drawable.ic_format_blockquote)
             editor.blockquote();
@@ -111,7 +112,7 @@ public class ToolsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             editor.code();
         else if (tag == R.drawable.ic_insert_table) {
             if (listener!=null)
-                editor.insertTable(listener.onPreInsertTable());
+                listener.onPreInsertTable();
         }
     }
 

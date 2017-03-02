@@ -1,14 +1,19 @@
 package com.xilingyuli.androidtips.blog;
 
 import android.animation.LayoutTransition;
+import android.content.DialogInterface;
 import android.database.DataSetObserver;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +26,7 @@ import com.xilingyuli.androidtips.R;
 import com.xilingyuli.markdown.MarkDownController;
 import com.xilingyuli.markdown.MarkDownEditorView;
 import com.xilingyuli.markdown.MarkDownPreviewView;
+import com.xilingyuli.markdown.OnPreInsertListener;
 import com.xilingyuli.markdown.ToolsAdapter;
 
 import butterknife.BindView;
@@ -29,7 +35,7 @@ import butterknife.ButterKnife;
 /**
 * Markdown Blog Edit And Preview
 */
-public class EditorActivity extends BaseActivity {
+public class EditorActivity extends BaseActivity implements OnPreInsertListener {
 
     public static final String TITLE = "title";
     public static final String CONTENT = "content";
@@ -104,9 +110,9 @@ public class EditorActivity extends BaseActivity {
                     if (viewPager.getCurrentItem() == 1) {
                         imm.hideSoftInputFromWindow(editorView.getWindowToken(), 0);
                     }
-                    else {
+                    /*else {
                         imm.showSoftInput(editorView, 0);
-                    }
+                    }*/
                 }
             }
         });
@@ -148,6 +154,51 @@ public class EditorActivity extends BaseActivity {
     private void initMarkDownController()
     {
         markDownController = new MarkDownController(editorView, previewView, toolsAdapter, false);
+        markDownController.setOnPreInsertListener(this);
     }
 
+    @Override
+    public void onPreInsertImage() {
+
+    }
+
+    @Override
+    public void onPreInsertLink() {
+        final View view = getLayoutInflater().inflate(R.layout.dialog_insert_link,null);
+        final TextInputEditText name = (TextInputEditText)view.findViewById(R.id.linkName);
+        final TextInputEditText url = (TextInputEditText)view.findViewById(R.id.linkUrl);
+        new AlertDialog.Builder(this)
+                .setTitle("插入链接")
+                .setView(view)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(markDownController!=null)
+                            markDownController.insertLink(new Pair<String, String>(name.getText()+"",url.getText()+""));
+                    }
+                })
+                .setNegativeButton("取消",null)
+                .show();
+    }
+
+    @Override
+    public void onPreInsertTable() {
+        final View view = getLayoutInflater().inflate(R.layout.dialog_insert_table,null);
+        final TextInputEditText row = (TextInputEditText)view.findViewById(R.id.row);
+        final TextInputEditText column = (TextInputEditText)view.findViewById(R.id.column);
+        new AlertDialog.Builder(this)
+                .setTitle("插入表格")
+                .setView(view)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(markDownController!=null)
+                            markDownController.insertTable(new Pair<Integer, Integer>(
+                                    Integer.parseInt(row.getText()+""),
+                                    Integer.parseInt(column.getText()+"")));
+                    }
+                })
+                .setNegativeButton("取消",null)
+                .show();
+    }
 }

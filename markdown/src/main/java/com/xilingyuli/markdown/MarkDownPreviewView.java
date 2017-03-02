@@ -13,6 +13,9 @@ import android.webkit.WebViewClient;
  */
 
 public class MarkDownPreviewView extends WebView {
+
+    private String markdownString = "";
+
     public MarkDownPreviewView(Context context) {
         super(context);
         init();
@@ -44,19 +47,22 @@ public class MarkDownPreviewView extends WebView {
     private void init()
     {
         getSettings().setJavaScriptEnabled(true);
+        getSettings().setUseWideViewPort(true);
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                loadUrl("javascript:parseMarkdown(\"" + markdownString.replace("\n", "\\n").replace("\"", "\\\"").replace("'", "\\'") + "\")");
             }
         });
-        loadUrl("file:///android_asset/markdown.html");
+        preview("");
     }
 
     public void preview(String markdownString)
     {
-        loadUrl("javascript:parseMarkdown(\"" + markdownString.replace("\n", "\\n").replace("\"", "\\\"").replace("'", "\\'") + "\")");
+        this.markdownString = markdownString;
+        loadUrl("file:///android_asset/markdown.html");
     }
 }

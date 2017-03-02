@@ -165,11 +165,11 @@ public class MarkDownEditorView extends EditText {
         insert("["+info.first+"]("+info.second+")");
     }
 
-    public void insertTable(Pair<Integer,Integer> pair)
+    public void insertTable(Pair<Integer,Integer> size)
     {
         int end = getNextLineBeginIndex();
-        int row = pair.first;
-        int column = pair.second;
+        int row = size.first;
+        int column = size.second;
 
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < column; i++) {
@@ -226,7 +226,10 @@ public class MarkDownEditorView extends EditText {
         else
             result = str + result;
         getText().replace(begin, end, result);
-        setSelection(begin+result.length());
+        int select = begin+result.length();
+        if(result.endsWith("\n"))
+            select--;
+        setSelection(select);
     }
 
     private void insert(String str)

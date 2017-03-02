@@ -3,6 +3,7 @@ package com.xilingyuli.markdown;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Pair;
 
 /**
  * Created by xilingyuli on 2017/2/28.
@@ -50,6 +51,21 @@ public class MarkDownController implements TextWatcher {
     public void setOnPreInsertListener(OnPreInsertListener listener)
     {
         toolsAdapter.setOnPreInsertListener(listener);
+    }
+
+    public void insertImage(String url)
+    {
+        editorView.insertImage(url);
+    }
+
+    public void insertLink(Pair<String, String> info)
+    {
+        editorView.insertLink(info);
+    }
+
+    public void insertTable(Pair<Integer,Integer> size)
+    {
+        editorView.insertTable(size);
     }
 
     public void preview()
