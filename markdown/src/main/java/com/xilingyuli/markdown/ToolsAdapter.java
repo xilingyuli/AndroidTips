@@ -15,6 +15,7 @@ public class ToolsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private LayoutInflater inflater;
     private MarkDownEditorView editor;
+    private OnPreInsertListener listener;
     protected static int[] toolsRes =
             {R.drawable.ic_format_header_1,
             R.drawable.ic_format_header_2,
@@ -43,6 +44,11 @@ public class ToolsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void setEditor(@NonNull MarkDownEditorView editor)
     {
         this.editor = editor;
+    }
+
+    public void setOnPreInsertListener(OnPreInsertListener listener)
+    {
+        this.listener = listener;
     }
 
     @Override
@@ -90,10 +96,12 @@ public class ToolsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         else if (tag == R.drawable.ic_format_list_ordered)
             editor.ordered();
         else if (tag == R.drawable.ic_insert_image) {
-            editor.insertImage("");
+            if (listener!=null)
+                editor.insertImage(listener.onPreInsertImage());
         }
         else if (tag == R.drawable.ic_insert_link) {
-            editor.insertLink("","");
+            if (listener!=null)
+                editor.insertLink(listener.onPreInsertLink());
         }
         else if (tag == R.drawable.ic_format_blockquote)
             editor.blockquote();
@@ -102,7 +110,8 @@ public class ToolsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         else if (tag == R.drawable.ic_insert_code)
             editor.code();
         else if (tag == R.drawable.ic_insert_table) {
-            editor.insertTable(3, 3);
+            if (listener!=null)
+                editor.insertTable(listener.onPreInsertTable());
         }
     }
 

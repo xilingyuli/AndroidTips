@@ -6,6 +6,7 @@ import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.widget.EditText;
 
 import java.util.regex.Pattern;
@@ -156,14 +157,16 @@ public class MarkDownEditorView extends EditText {
         insert("![image](" + url + ")");
     }
 
-    public void insertLink(String decrible, String url)
+    public void insertLink(Pair<String, String> info)
     {
-        insert("["+decrible+"]("+url+")");
+        insert("["+info.first+"]("+info.second+")");
     }
 
-    public void insertTable(int row, int column)
+    public void insertTable(Pair<Integer,Integer> pair)
     {
         int end = getNextLineBeginIndex();
+        int row = pair.first;
+        int column = pair.second;
 
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < column; i++) {

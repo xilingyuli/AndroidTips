@@ -47,6 +47,11 @@ public class MarkDownController implements TextWatcher {
             editorView.removeTextChangedListener(this);
     }
 
+    public void setOnPreInsertListener(OnPreInsertListener listener)
+    {
+        toolsAdapter.setOnPreInsertListener(listener);
+    }
+
     public void preview()
     {
         previewView.preview(editorView.getText()+"");
