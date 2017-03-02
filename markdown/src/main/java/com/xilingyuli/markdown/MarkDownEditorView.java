@@ -55,12 +55,15 @@ public class MarkDownEditorView extends EditText {
                     {
                         String lastLine = getLastLine();
                         if(lastLine.startsWith("* ")) {
-                            MarkDownEditorView.this.append("* ");
+                            MarkDownEditorView.this.getText().insert(i+1,"* ");
+                        }
+                        if(lastLine.startsWith("> ")) {
+                            MarkDownEditorView.this.getText().insert(i+1,"> ");
                         }
                         if(orderPattern.matcher(lastLine).lookingAt())
                         {
                             int num = Integer.parseInt(lastLine.substring(0, lastLine.indexOf(".")))+1;
-                            MarkDownEditorView.this.append(num+". ");
+                            MarkDownEditorView.this.getText().insert(i+1,num+". ");
                         }
                     }
                 }
@@ -134,7 +137,7 @@ public class MarkDownEditorView extends EditText {
             result = num+". "+result;
         }
         getText().replace(begin, end, result);
-        this.setSelection(begin, begin + result.length());
+        setSelection(begin+result.length());
     }
 
     public void blockquote()
@@ -144,12 +147,12 @@ public class MarkDownEditorView extends EditText {
 
     public void codeSingle()
     {
-        textStyle("'");
+        textStyle("`");
     }
 
     public void code()
     {
-        textStyle("\n'''\n");
+        textStyle("\n```\n");
     }
 
     public void insertImage(String url)
@@ -223,7 +226,7 @@ public class MarkDownEditorView extends EditText {
         else
             result = str + result;
         getText().replace(begin, end, result);
-        this.setSelection(begin, begin + result.length());
+        setSelection(begin+result.length());
     }
 
     private void insert(String str)
