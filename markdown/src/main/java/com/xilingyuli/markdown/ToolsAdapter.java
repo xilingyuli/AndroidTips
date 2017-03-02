@@ -89,6 +89,21 @@ public class ToolsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             editor.unordered();
         else if (tag == R.drawable.ic_format_list_ordered)
             editor.ordered();
+        else if (tag == R.drawable.ic_insert_image) {
+            editor.insertImage("");
+        }
+        else if (tag == R.drawable.ic_insert_link) {
+            editor.insertLink("","");
+        }
+        else if (tag == R.drawable.ic_format_blockquote)
+            editor.blockquote();
+        else if (tag == R.drawable.ic_insert_code_single)
+            editor.codeSingle();
+        else if (tag == R.drawable.ic_insert_code)
+            editor.code();
+        else if (tag == R.drawable.ic_insert_table) {
+            editor.insertTable(3, 3);
+        }
     }
 
     private class ToolsViewHolder extends RecyclerView.ViewHolder

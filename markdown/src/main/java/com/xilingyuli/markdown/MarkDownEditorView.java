@@ -136,6 +136,55 @@ public class MarkDownEditorView extends EditText {
         this.setSelection(begin, begin + result.length());
     }
 
+    public void blockquote()
+    {
+        lineStyle("> ");
+    }
+
+    public void codeSingle()
+    {
+        textStyle("'");
+    }
+
+    public void code()
+    {
+        textStyle("\n'''\n");
+    }
+
+    public void insertImage(String url)
+    {
+        insert("![image](" + url + ")");
+    }
+
+    public void insertLink(String decrible, String url)
+    {
+        insert("["+decrible+"]("+url+")");
+    }
+
+    public void insertTable(int row, int column)
+    {
+        int end = getNextLineBeginIndex();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < column; i++) {
+            stringBuilder.append("| Header ");
+        }
+        stringBuilder.append("|\n");
+        for (int i = 0; i < column; i++) {
+            stringBuilder.append("|:----------:");
+        }
+        stringBuilder.append("|\n");
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < column; j++) {
+                stringBuilder.append("|            ");
+            }
+            stringBuilder.append("|\n");
+        }
+        String result = stringBuilder.toString();
+        getText().insert(end, result);
+        setSelection(end + result.length());
+    }
+
     private void textStyle(String str)
     {
         int num = str.length();
@@ -172,6 +221,13 @@ public class MarkDownEditorView extends EditText {
             result = str + result;
         getText().replace(begin, end, result);
         this.setSelection(begin, begin + result.length());
+    }
+
+    private void insert(String str)
+    {
+        int selection = getSelectionStart();
+        getText().insert(selection, str);
+        setSelection(selection+str.length());
     }
 
     public String getLastLine()
