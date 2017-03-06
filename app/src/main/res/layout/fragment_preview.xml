@@ -5,7 +5,7 @@
     android:divider="@drawable/divider_simple"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.xilingyuli.androidtips.blog.PreviewFragment">
+    tools:context="com.xilingyuli.androidtips.blog.editor.PreviewFragment">
 
     <TextView
         android:id="@+id/title"

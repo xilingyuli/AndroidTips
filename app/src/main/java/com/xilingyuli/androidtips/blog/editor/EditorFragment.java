@@ -1,4 +1,4 @@
-package com.xilingyuli.androidtips.blog;
+package com.xilingyuli.androidtips.blog.editor;
 
 
 import android.os.Bundle;
@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.xilingyuli.androidtips.R;
 import com.xilingyuli.markdown.MarkDownEditorView;

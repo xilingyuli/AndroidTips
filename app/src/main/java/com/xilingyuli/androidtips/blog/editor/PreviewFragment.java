@@ -1,16 +1,12 @@
-package com.xilingyuli.androidtips.blog;
+package com.xilingyuli.androidtips.blog.editor;
 
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import com.xilingyuli.androidtips.R;

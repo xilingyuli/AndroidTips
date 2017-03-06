@@ -1,12 +1,10 @@
-package com.xilingyuli.androidtips.blog;
+package com.xilingyuli.androidtips.blog.editor;
 
 import android.animation.LayoutTransition;
 import android.content.DialogInterface;
-import android.database.DataSetObserver;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -14,12 +12,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageButton;
 
 import com.xilingyuli.androidtips.BaseActivity;
 import com.xilingyuli.androidtips.R;
@@ -31,6 +26,7 @@ import com.xilingyuli.markdown.ToolsAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
 * Markdown Blog Edit And Preview
@@ -155,6 +151,15 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
     {
         markDownController = new MarkDownController(editorView, previewView, toolsAdapter, false);
         markDownController.setOnPreInsertListener(this);
+    }
+
+    @OnClick(R.id.fab)
+    public void onChangeClick()
+    {
+        if(viewPager!=null) {
+            int index = 1 - viewPager.getCurrentItem();
+            viewPager.setCurrentItem(index, false);  //设为true不能正常切换，原因待探寻
+        }
     }
 
     @Override
