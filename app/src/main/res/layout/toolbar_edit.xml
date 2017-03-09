@@ -13,6 +13,7 @@
         app:title="@string/app_name"
         app:titleTextColor="@color/white"
         android:background="@color/colorPrimary"
+        android:theme="@style/Toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
 

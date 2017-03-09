@@ -2,12 +2,14 @@ package com.xilingyuli.androidtips.blog.editor;
 
 import android.animation.LayoutTransition;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,11 +20,16 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.xilingyuli.androidtips.BaseActivity;
 import com.xilingyuli.androidtips.R;
+import com.xilingyuli.androidtips.model.DataCloudHelper;
+import com.xilingyuli.androidtips.utils.RealPathUtil;
 import com.xilingyuli.markdown.MarkDownController;
 import com.xilingyuli.markdown.MarkDownEditorView;
 import com.xilingyuli.markdown.MarkDownPreviewView;
 import com.xilingyuli.markdown.OnPreInsertListener;
 import com.xilingyuli.markdown.ToolsAdapter;
+
+import java.io.File;
+import java.net.URI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +38,7 @@ import butterknife.OnClick;
 /**
 * Markdown Blog Edit And Preview
 */
-public class EditorActivity extends BaseActivity implements OnPreInsertListener {
+public class EditorActivity extends BaseActivity implements EditorContract.View {
 
     public static final String TITLE = "title";
     public static final String CONTENT = "content";
@@ -41,12 +48,8 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
     @BindView(R.id.viewPager)
     ViewPager viewPager;
 
-    EditorFragment editorFragment;
-    PreviewFragment previewFragment;
-    MarkDownEditorView editorView;
-    MarkDownPreviewView previewView;
-    ToolsAdapter toolsAdapter;
-    MarkDownController markDownController;
+    EditorContract.Presenter presenter;
+
     InputMethodManager imm;
 
     @Override
@@ -67,16 +70,24 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
             layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
         }
 
+        //init toolbar
+        setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+        ToolsAdapter toolsAdapter = new ToolsAdapter(getLayoutInflater());
+        tools.setAdapter(toolsAdapter);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+
         //init fragments
         String title = getIntent().getStringExtra(TITLE)==null?"":getIntent().getStringExtra(TITLE);
         String content = getIntent().getStringExtra(CONTENT)==null?"":getIntent().getStringExtra(CONTENT);
-        editorFragment = EditorFragment.newInstance(title,content);
-        previewFragment = PreviewFragment.newInstance();
+        final EditorFragment editorFragment = EditorFragment.newInstance(title,content);
+        final PreviewFragment previewFragment = PreviewFragment.newInstance();
 
-        //init toolbar
-        setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
-        toolsAdapter = new ToolsAdapter(getLayoutInflater());
-        tools.setAdapter(toolsAdapter);
+        //setPresenter
+        setPresenter(new EditorPresenter(toolsAdapter,editorFragment,previewFragment,this));
+        editorFragment.setPresenter(presenter);
+        previewFragment.setPresenter(presenter);
 
         //init viewPager
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -85,12 +96,9 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
 
             @Override
             public void onPageSelected(int position) {
-                if(markDownController==null)
-                    return;
                 if(position==1) {
                     tools.setVisibility(View.GONE);
-                    previewFragment.setTitle(editorFragment.getTitle());
-                    markDownController.preview();
+                    presenter.preview();
                 }
                 else {
                     tools.setVisibility(View.VISIBLE);
@@ -102,9 +110,12 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
                 //显示/隐藏软键盘，在onPageSelected中调用会引起滑动动画冲突
                 if (state == ViewPager.SCROLL_STATE_IDLE)
                 {
-                    editorView.requestFocus();
                     if (viewPager.getCurrentItem() == 1) {
-                        imm.hideSoftInputFromWindow(editorView.getWindowToken(), 0);
+                        try {
+                            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                     /*else {
                         imm.showSoftInput(editorView, 0);
@@ -133,26 +144,6 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
         });
     }
 
-    public void setEditorView(MarkDownEditorView editorView)
-    {
-        this.editorView = editorView;
-        if(editorView!=null&&previewView!=null&&toolsAdapter!=null)
-            initMarkDownController();
-    }
-
-    public void setPreviewView(MarkDownPreviewView previewView)
-    {
-        this.previewView = previewView;
-        if(editorView!=null&&previewView!=null&&toolsAdapter!=null)
-            initMarkDownController();
-    }
-
-    private void initMarkDownController()
-    {
-        markDownController = new MarkDownController(editorView, previewView, toolsAdapter, false);
-        markDownController.setOnPreInsertListener(this);
-    }
-
     @OnClick(R.id.fab)
     public void onChangeClick()
     {
@@ -163,12 +154,15 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
     }
 
     @Override
-    public void onPreInsertImage() {
-
+    public void selectImage() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_PICK);
+        intent.setType("image/*");  //从所有图片中进行选择
+        startActivityForResult(intent, 0);
     }
 
     @Override
-    public void onPreInsertLink() {
+    public void showInsertLinkDialog() {
         final View view = getLayoutInflater().inflate(R.layout.dialog_insert_link,null);
         final TextInputEditText name = (TextInputEditText)view.findViewById(R.id.linkName);
         final TextInputEditText url = (TextInputEditText)view.findViewById(R.id.linkUrl);
@@ -178,8 +172,7 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if(markDownController!=null)
-                            markDownController.insertLink(new Pair<String, String>(name.getText()+"",url.getText()+""));
+                        presenter.insertLink(new Pair<String, String>(name.getText()+"",url.getText()+""));
                     }
                 })
                 .setNegativeButton("取消",null)
@@ -187,7 +180,7 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
     }
 
     @Override
-    public void onPreInsertTable() {
+    public void showInsertTableDialog() {
         final View view = getLayoutInflater().inflate(R.layout.dialog_insert_table,null);
         final TextInputEditText row = (TextInputEditText)view.findViewById(R.id.row);
         final TextInputEditText column = (TextInputEditText)view.findViewById(R.id.column);
@@ -197,13 +190,36 @@ public class EditorActivity extends BaseActivity implements OnPreInsertListener 
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if(markDownController!=null)
-                            markDownController.insertTable(new Pair<Integer, Integer>(
-                                    Integer.parseInt(row.getText()+""),
-                                    Integer.parseInt(column.getText()+"")));
+                        presenter.insertTable(new Pair<Integer, Integer>(
+                                Integer.parseInt(row.getText()+""),
+                                Integer.parseInt(column.getText()+"")));
                     }
                 })
                 .setNegativeButton("取消",null)
                 .show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==0 && resultCode==RESULT_OK)
+        {
+            //TODO
+            try {
+                File file = new File(RealPathUtil.getRealPath(this,data.getData()));
+                /*DataCloudHelper.OBJECT_TYPE type = DataCloudHelper.OBJECT_TYPE.IMAGE;
+                DataCloudHelper.initCOSClient(this);
+                DataCloudHelper.checkWirtePermission(this);
+                DataCloudHelper.updateObject(type, file);*/
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    @Override
+    public void setPresenter(EditorContract.Presenter presenter) {
+        this.presenter = presenter;
     }
 }

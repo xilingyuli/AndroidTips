@@ -87,4 +87,41 @@ public class MarkDownController implements TextWatcher {
     public void afterTextChanged(Editable editable) {
         preview();
     }
+
+    public static class Builder
+    {
+        private MarkDownEditorView editorView;
+        private MarkDownPreviewView previewView;
+        private ToolsAdapter toolsAdapter;
+        private boolean autoPreview = false;
+
+        public Builder(){}
+
+        public Builder setEditorView(MarkDownEditorView editorView) {
+            this.editorView = editorView;
+            return this;
+        }
+
+        public Builder setPreviewView(MarkDownPreviewView previewView) {
+            this.previewView = previewView;
+            return this;
+        }
+
+        public Builder setToolsAdapter(ToolsAdapter toolsAdapter) {
+            this.toolsAdapter = toolsAdapter;
+            return this;
+        }
+
+        public Builder setAutoPreview(boolean autoPreview) {
+            this.autoPreview = autoPreview;
+            return this;
+        }
+
+        public MarkDownController build(){
+            if(editorView!=null&&previewView!=null&&toolsAdapter!=null)
+                return new MarkDownController(editorView,previewView,toolsAdapter);
+            else
+                return null;
+        }
+    }
 }

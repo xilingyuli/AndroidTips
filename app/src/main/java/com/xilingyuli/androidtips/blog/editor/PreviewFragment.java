@@ -14,6 +14,7 @@ import com.xilingyuli.markdown.MarkDownPreviewView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,19 +23,24 @@ import butterknife.ButterKnife;
  */
 public class PreviewFragment extends Fragment {
 
-    private View view;
     @BindView(R.id.title)
     TextView titleView;
     @BindView(R.id.content)
     MarkDownPreviewView contentView;
+
+    EditorContract.Presenter presenter;
 
     public PreviewFragment() {
         // Required empty public constructor
     }
 
     public static PreviewFragment newInstance() {
-        PreviewFragment fragment = new PreviewFragment();
-        return fragment;
+        return new PreviewFragment();
+    }
+
+    public void setPresenter(EditorContract.Presenter presenter)
+    {
+        this.presenter = presenter;
     }
 
     @Override
@@ -42,14 +48,12 @@ public class PreviewFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    @Override @SuppressLint("SetJavaScriptEnabled")
+    @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
-        if(view!=null)
-            return view;
-        view = inflater.inflate(R.layout.fragment_preview, container, false);
+        View view = inflater.inflate(R.layout.fragment_preview, container, false);
         ButterKnife.bind(this, view);
-        ((EditorActivity)getActivity()).setPreviewView(contentView);
+        presenter.setPreviewView((MarkDownPreviewView)view.findViewById(R.id.content));
         return view;
     }
 
