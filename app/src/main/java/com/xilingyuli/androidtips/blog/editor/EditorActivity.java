@@ -20,16 +20,10 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.xilingyuli.androidtips.BaseActivity;
 import com.xilingyuli.androidtips.R;
-import com.xilingyuli.androidtips.model.DataCloudHelper;
 import com.xilingyuli.androidtips.utils.RealPathUtil;
-import com.xilingyuli.markdown.MarkDownController;
-import com.xilingyuli.markdown.MarkDownEditorView;
-import com.xilingyuli.markdown.MarkDownPreviewView;
-import com.xilingyuli.markdown.OnPreInsertListener;
 import com.xilingyuli.markdown.ToolsAdapter;
 
 import java.io.File;
-import java.net.URI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -204,17 +198,7 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==0 && resultCode==RESULT_OK)
         {
-            //TODO
-            try {
-                File file = new File(RealPathUtil.getRealPath(this,data.getData()));
-                /*DataCloudHelper.OBJECT_TYPE type = DataCloudHelper.OBJECT_TYPE.IMAGE;
-                DataCloudHelper.initCOSClient(this);
-                DataCloudHelper.checkWirtePermission(this);
-                DataCloudHelper.updateObject(type, file);*/
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
+            presenter.insertImage(RealPathUtil.getRealPath(this,data.getData()));
         }
     }
 

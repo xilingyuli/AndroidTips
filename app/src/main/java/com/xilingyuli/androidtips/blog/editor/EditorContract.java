@@ -1,12 +1,16 @@
 package com.xilingyuli.androidtips.blog.editor;
 
 import android.util.Pair;
+import android.util.StringBuilderPrinter;
 
+import com.tencent.cos.task.listener.IUploadTaskListener;
 import com.xilingyuli.androidtips.BasePresenter;
 import com.xilingyuli.androidtips.BaseView;
 import com.xilingyuli.markdown.MarkDownEditorView;
 import com.xilingyuli.markdown.MarkDownPreviewView;
 import com.xilingyuli.markdown.OnPreInsertListener;
+
+import java.io.Serializable;
 
 /**
  * Created by xilingyuli on 2017/3/9.
@@ -19,13 +23,14 @@ public interface EditorContract {
         void showInsertTableDialog();
     }
 
-    interface Presenter extends BasePresenter, OnPreInsertListener {
+    interface Presenter extends BasePresenter, OnPreInsertListener, Serializable {
         void setEditorView(MarkDownEditorView editorView);
         void setPreviewView(MarkDownPreviewView previewView);
+
         void preview();
         void save();
 
-        void insertImage();
+        void insertImage(String path);
         void insertTable(Pair<Integer, Integer> pair);
         void insertLink(Pair<String, String> pair);
     }
