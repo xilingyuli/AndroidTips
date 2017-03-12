@@ -4,17 +4,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Pair;
 
+import com.tencent.cos.COSClient;
 import com.tencent.cos.model.COSRequest;
 import com.tencent.cos.model.COSResult;
+import com.tencent.cos.model.PutObjectRequest;
+import com.tencent.cos.model.PutObjectResult;
 import com.tencent.cos.task.listener.IUploadTaskListener;
-import com.xilingyuli.androidtips.model.CloudDataService;
+import com.xilingyuli.androidtips.model.CloudDataHelper;
+import com.xilingyuli.androidtips.model.CloudDataUtil;
 import com.xilingyuli.markdown.MarkDownController;
 import com.xilingyuli.markdown.MarkDownEditorView;
 import com.xilingyuli.markdown.MarkDownPreviewView;
-import com.xilingyuli.markdown.OnPreInsertListener;
 import com.xilingyuli.markdown.ToolsAdapter;
 
-import java.io.Serializable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -30,7 +36,7 @@ public class EditorPresenter implements EditorContract.Presenter {
     private MarkDownController.Builder builder;
     private MarkDownController markDownController;
 
-    private UploadImageListener uploadImageListener;
+    private COSClient client;
 
     EditorPresenter(ToolsAdapter toolsAdapter, EditorFragment editorFragment, PreviewFragment previewFragment, EditorContract.View view)
     {
@@ -39,7 +45,6 @@ public class EditorPresenter implements EditorContract.Presenter {
         this.previewFragment = previewFragment;
         builder = new MarkDownController.Builder();
         builder.setToolsAdapter(toolsAdapter).setAutoPreview(false);
-        uploadImageListener = new UploadImageListener();
     }
 
     public void setEditorView(MarkDownEditorView editorView)
@@ -79,11 +84,35 @@ public class EditorPresenter implements EditorContract.Presenter {
 
 
     @Override
-    public void insertImage(String path) {
-        Intent intent = new Intent((Activity)view, CloudDataService.class);
-        intent.putExtra("file",path);
-        intent.putExtra("listener",uploadImageListener);
-        ((Activity)view).startService(intent);
+    public void insertImage(final String path) {
+        if(client==null)
+            client = CloudDataUtil.createCOSClient((Activity)view);
+        Observable.create((ObservableOnSubscribe<String>) e -> {
+                PutObjectRequest request = (PutObjectRequest) CloudDataHelper.createCOSRequest(CloudDataHelper.ACTION_UPLOAD_IMAGE,path);
+                if(request==null) {
+                    e.onError(new Throwable("Error file"));
+                    return;
+                }
+                request.setListener(new IUploadTaskListener() {
+                    @Override
+                    public void onProgress(COSRequest cosRequest, long l, long l1) {}
+
+                    @Override
+                    public void onCancel(COSRequest cosRequest, COSResult cosResult) {}
+
+                    @Override
+                    public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
+                        e.onNext(((PutObjectResult)cosResult).access_url);
+                    }
+
+                    @Override
+                    public void onFailed(COSRequest cosRequest, COSResult cosResult) {}
+                });
+                client.putObject(request);
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(url -> markDownController.insertImage(url));
     }
 
     @Override
@@ -111,28 +140,5 @@ public class EditorPresenter implements EditorContract.Presenter {
     @Override
     public void onPreInsertTable() {
         view.showInsertTableDialog();
-    }
-
-    public class UploadImageListener implements IUploadTaskListener,Serializable {
-        @Override
-        public void onProgress(COSRequest cosRequest, long l, long l1) {
-
-        }
-
-        @Override
-        public void onCancel(COSRequest cosRequest, COSResult cosResult) {
-
-        }
-
-        @Override
-        public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-            if (markDownController != null)
-                markDownController.insertImage(cosRequest.getDownloadUrl());
-        }
-
-        @Override
-        public void onFailed(COSRequest cosRequest, COSResult cosResult) {
-
-        }
     }
 }
