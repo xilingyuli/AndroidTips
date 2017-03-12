@@ -10,6 +10,7 @@ import com.tencent.cos.common.COSEndPoint;
 import com.tencent.cos.model.COSRequest;
 import com.tencent.cos.model.PutObjectRequest;
 import com.tencent.cos.model.PutObjectResult;
+import com.tencent.cos.task.listener.ITaskListener;
 import com.tencent.cos.task.listener.IUploadTaskListener;
 
 import java.io.File;
@@ -21,6 +22,7 @@ import java.io.File;
 public class CloudDataHelper{
 
     public static final String ACTION_UPLOAD_IMAGE = "ACTION_UPLOAD_IMAGE";
+    public static final String ACTION_UPLOAD_BLOG = "ACTION_UPLOAD_BLOG";
 
     public enum OBJECT_TYPE {
         IMAGE("images"), BLOG("blogs");
@@ -30,26 +32,24 @@ public class CloudDataHelper{
         }
     }
 
-    public enum ACTION {
-        ACTION_UPLOAD_IMAGE, ACTION_UPLOAD_BLOG;
-    }
-
-    public static COSRequest createCOSRequest(String... params){
-        switch (params[0]){
+    public static COSRequest createCOSRequest(Object... params){
+        String action = (String) params[0];
+        switch (action){
             case ACTION_UPLOAD_IMAGE:
-                return createUpdateObjectRequest(OBJECT_TYPE.IMAGE, new File(params[1]));
-
+                return createUpdateObjectRequest((ITaskListener)params[1], OBJECT_TYPE.IMAGE, (File)params[2], false);
+            case ACTION_UPLOAD_BLOG:
+                return createUpdateObjectRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (File)params[2], true);
         }
         return null;
     }
 
-    private static PutObjectRequest createUpdateObjectRequest(OBJECT_TYPE type, File file) {
+    private static PutObjectRequest createUpdateObjectRequest(ITaskListener listener, OBJECT_TYPE type, File file, boolean keepName) {
         if(file==null||!file.exists()||!file.isFile()||!file.canRead())
             return null;
         String fileName = file.getName();
         String newFileName = System.currentTimeMillis()
                 +(fileName.contains(".")?fileName.substring(fileName.indexOf(".")):"");
-        String cosPath = type.path + "/" + newFileName;
+        String cosPath = type.path + "/" + (keepName?fileName:newFileName);
         String signature = CloudDataUtil.sign(false, cosPath);
 
         PutObjectRequest putObjectRequest = new PutObjectRequest();
@@ -57,6 +57,8 @@ public class CloudDataHelper{
         putObjectRequest.setCosPath(cosPath);
         putObjectRequest.setSrcPath(file.getPath());
         putObjectRequest.setSign(signature);
+        putObjectRequest.setInsertOnly("0");
+        putObjectRequest.setListener(listener);
         return putObjectRequest;
     }
 }

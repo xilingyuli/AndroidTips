@@ -17,6 +17,7 @@ import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.xilingyuli.androidtips.BaseActivity;
 import com.xilingyuli.androidtips.R;
@@ -147,6 +148,24 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
         }
     }
 
+    @OnClick(R.id.save)
+    public void save()
+    {
+        presenter.save(true);
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("退出")
+                .setMessage("是否保存到网络？")
+                .setPositiveButton("保存",
+                        (dialogInterface, i) -> { if(presenter.save(false)) super.onBackPressed();})
+                .setNegativeButton("取消",(dialogInterface, i)-> super.onBackPressed())
+                .show();
+
+    }
+
     @Override
     public void selectImage() {
         Intent intent = new Intent();
@@ -191,6 +210,16 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
                 })
                 .setNegativeButton("取消",null)
                 .show();
+    }
+
+    @Override
+    public void showProcessDialog(int process) {
+
+    }
+
+    @Override
+    public void showAlertDialog(String error) {
+        this.runOnUiThread(() -> Toast.makeText(EditorActivity.this,error,Toast.LENGTH_SHORT).show());
     }
 
     @Override

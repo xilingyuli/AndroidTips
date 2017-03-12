@@ -21,6 +21,9 @@ public interface EditorContract {
         void selectImage();
         void showInsertLinkDialog();
         void showInsertTableDialog();
+
+        void showProcessDialog(int process);
+        void showAlertDialog(String error);
     }
 
     interface Presenter extends BasePresenter, OnPreInsertListener, Serializable {
@@ -28,7 +31,7 @@ public interface EditorContract {
         void setPreviewView(MarkDownPreviewView previewView);
 
         void preview();
-        void save();
+        boolean save(boolean local);
 
         void insertImage(String path);
         void insertTable(Pair<Integer, Integer> pair);
