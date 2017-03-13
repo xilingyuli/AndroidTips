@@ -8,6 +8,7 @@ import com.tencent.cos.COSClient;
 import com.tencent.cos.COSClientConfig;
 import com.tencent.cos.common.COSEndPoint;
 import com.tencent.cos.model.COSRequest;
+import com.tencent.cos.model.ListDirRequest;
 import com.tencent.cos.model.PutObjectRequest;
 import com.tencent.cos.model.PutObjectResult;
 import com.tencent.cos.task.listener.ITaskListener;
@@ -23,6 +24,7 @@ public class CloudDataHelper{
 
     public static final String ACTION_UPLOAD_IMAGE = "ACTION_UPLOAD_IMAGE";
     public static final String ACTION_UPLOAD_BLOG = "ACTION_UPLOAD_BLOG";
+    public static final String ACTION_LIST_BLOG = "ACTION_LIST_BLOG";
 
     public enum OBJECT_TYPE {
         IMAGE("images"), BLOG("blogs");
@@ -39,6 +41,8 @@ public class CloudDataHelper{
                 return createUpdateObjectRequest((ITaskListener)params[1], OBJECT_TYPE.IMAGE, (File)params[2], false);
             case ACTION_UPLOAD_BLOG:
                 return createUpdateObjectRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (File)params[2], true);
+            case ACTION_LIST_BLOG:
+                return createListDirRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (String)params[2]);
         }
         return null;
     }
@@ -60,5 +64,16 @@ public class CloudDataHelper{
         putObjectRequest.setInsertOnly("0");
         putObjectRequest.setListener(listener);
         return putObjectRequest;
+    }
+
+    private static ListDirRequest createListDirRequest(ITaskListener listener, OBJECT_TYPE type, String content) {
+        //String signature = CloudDataUtil.sign(false, cosPath);
+        ListDirRequest listDirRequest = new ListDirRequest();
+        listDirRequest.setBucket(CloudDataUtil.bucket);
+        listDirRequest.setCosPath(type.path);
+        listDirRequest.setNum(100);
+        listDirRequest.setContent(content);
+        listDirRequest.setListener(listener);
+        return listDirRequest;
     }
 }

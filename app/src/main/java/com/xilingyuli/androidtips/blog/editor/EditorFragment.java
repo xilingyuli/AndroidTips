@@ -15,7 +15,6 @@ import com.xilingyuli.markdown.MarkDownEditorView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
 
 /**
  * A simple {@link Fragment} subclass.

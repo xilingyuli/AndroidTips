@@ -1,7 +1,6 @@
 package com.xilingyuli.androidtips.blog.editor;
 
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import com.xilingyuli.markdown.MarkDownPreviewView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
 
 /**
  * A simple {@link Fragment} subclass.

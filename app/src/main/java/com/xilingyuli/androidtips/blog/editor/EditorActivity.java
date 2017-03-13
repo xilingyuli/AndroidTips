@@ -26,8 +26,6 @@ import com.xilingyuli.androidtips.R;
 import com.xilingyuli.androidtips.utils.RealPathUtil;
 import com.xilingyuli.markdown.ToolsAdapter;
 
-import java.io.File;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -181,6 +179,9 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
                 break;
             case R.id.upload:
                 presenter.save(false);
+                break;
+            case android.R.id.home:
+                onBackPressed();
                 break;
         }
         return true;

@@ -1,9 +1,7 @@
 package com.xilingyuli.androidtips.blog.editor;
 
 import android.util.Pair;
-import android.util.StringBuilderPrinter;
 
-import com.tencent.cos.task.listener.IUploadTaskListener;
 import com.xilingyuli.androidtips.BasePresenter;
 import com.xilingyuli.androidtips.BaseView;
 import com.xilingyuli.markdown.MarkDownEditorView;
@@ -16,7 +14,7 @@ import java.io.Serializable;
  * Created by xilingyuli on 2017/3/9.
  */
 
-public interface EditorContract {
+interface EditorContract {
     interface View extends BaseView<Presenter> {
         void selectImage();
         void showInsertLinkDialog();

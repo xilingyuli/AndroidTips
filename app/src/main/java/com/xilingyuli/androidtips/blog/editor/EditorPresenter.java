@@ -1,7 +1,6 @@
 package com.xilingyuli.androidtips.blog.editor;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
 import android.util.Pair;
 
 import com.tencent.cos.COSClient;
@@ -25,7 +24,7 @@ import java.io.File;
  * Created by xilingyuli on 2017/3/9.
  */
 
-public class EditorPresenter implements EditorContract.Presenter {
+class EditorPresenter implements EditorContract.Presenter {
 
     private EditorContract.View view;
     private EditorFragment editorFragment;
