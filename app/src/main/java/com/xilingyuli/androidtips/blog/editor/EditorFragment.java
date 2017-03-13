@@ -3,6 +3,8 @@ package com.xilingyuli.androidtips.blog.editor;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,7 @@ public class EditorFragment extends Fragment {
     private static final String CONTENT = "content";
     private String title;
     private String content;
+    private boolean canChangeTitle = true;
 
     @BindView(R.id.title)
     EditText titleView;
@@ -32,6 +35,8 @@ public class EditorFragment extends Fragment {
     MarkDownEditorView contentView;
 
     EditorContract.Presenter presenter;
+
+    private boolean needSave = false;
 
     public EditorFragment() {
         // Required empty public constructor
@@ -57,6 +62,7 @@ public class EditorFragment extends Fragment {
         if (getArguments() != null) {
             title = getArguments().getString(TITLE);
             content = getArguments().getString(CONTENT);
+            canChangeTitle = (title == null || title.isEmpty());
         }
     }
 
@@ -67,8 +73,38 @@ public class EditorFragment extends Fragment {
         ButterKnife.bind(this,view);
         titleView.setText(title);
         contentView.setText(content);
+        titleView.setEnabled(canChangeTitle);
+        contentView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                needSave = true;
+            }
+        });
         presenter.setEditorView((MarkDownEditorView)view.findViewById(R.id.content));
         return view;
+    }
+
+    public boolean isNeedSave() {
+        return needSave;
+    }
+
+    public void setNeedSave(boolean needSave) {
+        this.needSave = needSave;
+    }
+
+    public void setCanChangeTitle(boolean b){
+        canChangeTitle = b;
+        titleView.setEnabled(canChangeTitle);
     }
 
     public String getTitle()

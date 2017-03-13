@@ -32,6 +32,7 @@ public interface EditorContract {
 
         void preview();
         boolean save(boolean local);
+        boolean isNeedSave();
 
         void insertImage(String path);
         void insertTable(Pair<Integer, Integer> pair);

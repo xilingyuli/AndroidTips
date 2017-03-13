@@ -14,6 +14,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -43,9 +45,9 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
     @BindView(R.id.viewPager)
     ViewPager viewPager;
 
-    EditorContract.Presenter presenter;
+    private EditorContract.Presenter presenter;
 
-    InputMethodManager imm;
+    private InputMethodManager imm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,22 +150,40 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
         }
     }
 
-    @OnClick(R.id.save)
-    public void save()
-    {
-        presenter.save(true);
+    @Override
+    public void onBackPressed() {
+        if(presenter.isNeedSave()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("退出")
+                    .setMessage("是否保存并上传？")
+                    .setPositiveButton("确定",
+                            (dialogInterface, i) -> {
+                                if (presenter.save(false)) super.onBackPressed();
+                            })
+                    .setNegativeButton("取消", (dialogInterface, i) -> super.onBackPressed())
+                    .show();
+        }
+        else
+            super.onBackPressed();
     }
 
     @Override
-    public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setTitle("退出")
-                .setMessage("是否保存到网络？")
-                .setPositiveButton("保存",
-                        (dialogInterface, i) -> { if(presenter.save(false)) super.onBackPressed();})
-                .setNegativeButton("取消",(dialogInterface, i)-> super.onBackPressed())
-                .show();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.editor, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save:
+                presenter.save(true);
+                break;
+            case R.id.upload:
+                presenter.save(false);
+                break;
+        }
+        return true;
     }
 
     @Override

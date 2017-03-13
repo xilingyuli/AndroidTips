@@ -1,7 +1,7 @@
 package com.xilingyuli.androidtips.blog.editor;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.util.Pair;
 
 import com.tencent.cos.COSClient;
@@ -19,13 +19,6 @@ import com.xilingyuli.markdown.MarkDownPreviewView;
 import com.xilingyuli.markdown.ToolsAdapter;
 
 import java.io.File;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -86,8 +79,8 @@ public class EditorPresenter implements EditorContract.Presenter {
 
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
+                editorFragment.setNeedSave(false);
                 view.showAlertDialog("上传成功");
-                ((Activity)view).finish();
             }
 
             @Override
@@ -130,7 +123,12 @@ public class EditorPresenter implements EditorContract.Presenter {
             view.showAlertDialog("请输入标题");
             return false;
         }
-        FileUtil.saveFile(title+".md",editorFragment.getContent());
+
+        editorFragment.setCanChangeTitle(false);
+        if(!FileUtil.saveFile(title+".md",editorFragment.getContent())) {
+            view.showAlertDialog("保存失败");
+            return false;
+        }
         if(local) {
             view.showAlertDialog("本地保存成功");
             return true;
@@ -148,6 +146,11 @@ public class EditorPresenter implements EditorContract.Presenter {
         }
         client.putObject(request);
         return true;
+    }
+
+    @Override
+    public boolean isNeedSave() {
+        return editorFragment.isNeedSave();
     }
 
     @Override
