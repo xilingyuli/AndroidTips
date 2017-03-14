@@ -67,12 +67,13 @@ public class CloudDataHelper{
     }
 
     private static ListDirRequest createListDirRequest(ITaskListener listener, OBJECT_TYPE type, String content) {
-        //String signature = CloudDataUtil.sign(false, cosPath);
+        String signature = CloudDataUtil.sign(false, "");
         ListDirRequest listDirRequest = new ListDirRequest();
         listDirRequest.setBucket(CloudDataUtil.bucket);
         listDirRequest.setCosPath(type.path);
         listDirRequest.setNum(100);
         listDirRequest.setContent(content);
+        listDirRequest.setSign(signature);
         listDirRequest.setListener(listener);
         return listDirRequest;
     }
