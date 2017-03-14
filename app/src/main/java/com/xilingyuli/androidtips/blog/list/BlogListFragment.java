@@ -30,7 +30,7 @@ public class BlogListFragment extends Fragment implements BlogListContract.View 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new BlogListPresenter(this);
-        adapter = new BlogListRecyclerViewAdapter(getLayoutInflater(savedInstanceState));
+        adapter = new BlogListRecyclerViewAdapter(this, getLayoutInflater(savedInstanceState));
     }
 
     @Override
