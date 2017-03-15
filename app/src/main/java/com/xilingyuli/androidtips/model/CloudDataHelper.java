@@ -8,14 +8,17 @@ import com.tencent.cos.COSClient;
 import com.tencent.cos.COSClientConfig;
 import com.tencent.cos.common.COSEndPoint;
 import com.tencent.cos.model.COSRequest;
+import com.tencent.cos.model.DeleteObjectRequest;
 import com.tencent.cos.model.ListDirRequest;
 import com.tencent.cos.model.MoveObjectRequest;
 import com.tencent.cos.model.PutObjectRequest;
 import com.tencent.cos.model.PutObjectResult;
 import com.tencent.cos.task.listener.ITaskListener;
 import com.tencent.cos.task.listener.IUploadTaskListener;
+import com.tencent.cos.utils.COSPathUtils;
 
 import java.io.File;
+import java.net.URLEncoder;
 
 /**
  * Created by xilingyuli on 2017/3/11.
@@ -48,6 +51,8 @@ public class CloudDataHelper{
                 return createListDirRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (String)params[2]);
             case ACTION_RENAME_BLOG:
                 return createMoveObjectRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (String)params[2],(String)params[3]);
+            case ACTION_DELETE_BLOG:
+                return createDeleteObjectRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (String)params[2]);
         }
         return null;
     }
@@ -59,7 +64,7 @@ public class CloudDataHelper{
         String newFileName = System.currentTimeMillis()
                 +(fileName.contains(".")?fileName.substring(fileName.indexOf(".")):"");
         String cosPath = type.path + "/" + (keepName?fileName:newFileName);
-        String signature = CloudDataUtil.sign(false, cosPath);
+        String signature = CloudDataUtil.sign(false, "");
 
         PutObjectRequest putObjectRequest = new PutObjectRequest();
         putObjectRequest.setBucket(CloudDataUtil.bucket);
@@ -84,12 +89,38 @@ public class CloudDataHelper{
     }
 
     private static MoveObjectRequest createMoveObjectRequest(ITaskListener listener, OBJECT_TYPE type, String oldName, String newName) {
+        String cosPath = "/"+type.path+"/"+oldName;
+        try {
+            cosPath = "/"+type.path+"/"+URLEncoder.encode(oldName,"utf-8");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        String fullPath = "/"+CloudDataUtil.appId+"/"+CloudDataUtil.bucket+cosPath;
+
         MoveObjectRequest moveObjectRequest = new MoveObjectRequest();
         moveObjectRequest.setBucket(CloudDataUtil.bucket);
-        moveObjectRequest.setCosPath(type.path+"/"+oldName);
+        moveObjectRequest.setCosPath(cosPath);
         moveObjectRequest.setDest_Filed(type.path+"/"+newName);
-        moveObjectRequest.setSign(CloudDataUtil.sign(false, ""));
+        moveObjectRequest.setSign(CloudDataUtil.sign(true, fullPath));
         moveObjectRequest.setListener(listener);
         return moveObjectRequest;
+
+    }
+
+    private static DeleteObjectRequest createDeleteObjectRequest(ITaskListener listener, OBJECT_TYPE type, String name){
+        String cosPath = "/"+type.path+"/"+name;
+        try {
+            cosPath = "/"+type.path+"/"+URLEncoder.encode(name,"utf-8");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        String fullPath = "/"+CloudDataUtil.appId+"/"+CloudDataUtil.bucket+cosPath;
+
+        DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest();
+        deleteObjectRequest.setBucket(CloudDataUtil.bucket);
+        deleteObjectRequest.setCosPath(cosPath);
+        deleteObjectRequest.setSign(CloudDataUtil.sign(true,fullPath));
+        deleteObjectRequest.setListener(listener);
+        return deleteObjectRequest;
     }
 }

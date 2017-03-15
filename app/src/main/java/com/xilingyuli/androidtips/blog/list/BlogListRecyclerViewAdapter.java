@@ -59,7 +59,7 @@ class BlogListRecyclerViewAdapter extends RecyclerView.Adapter<BlogListRecyclerV
                 (data.get(position).get("name")).replace(".md",""),
                 sdf.format(date),
                 data.get(position).get("source_url"),
-                data.get(position).get("access_url")
+                data.get(position).get("name")
         );
     }
 
@@ -72,7 +72,7 @@ class BlogListRecyclerViewAdapter extends RecyclerView.Adapter<BlogListRecyclerV
     {
         View view;
         TextView id,title,date;
-        String url,accessUrl;
+        String url,name;
         BlogListContract.Presenter presenter;
 
         ToolsViewHolder(View view, BlogListContract.Presenter presenter)
@@ -84,17 +84,17 @@ class BlogListRecyclerViewAdapter extends RecyclerView.Adapter<BlogListRecyclerV
             title = (TextView) view.findViewById(R.id.title);
             date = (TextView) view.findViewById(R.id.date);
             url = "";
-            accessUrl = "";
+            name = "";
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
         }
 
-        void setData(String id, String title, String date, String url, String accessUrl){
+        void setData(String id, String title, String date, String url, String name){
             this.id.setText(id);
             this.title.setText(title);
             this.date.setText(date);
             this.url = url;
-            this.accessUrl = accessUrl;
+            this.name = name;
         }
 
         @Override
@@ -104,7 +104,7 @@ class BlogListRecyclerViewAdapter extends RecyclerView.Adapter<BlogListRecyclerV
 
         @Override
         public boolean onLongClick(View view) {
-            presenter.operateBlog(accessUrl);
+            presenter.operateBlog(name);
             return false;
         }
     }

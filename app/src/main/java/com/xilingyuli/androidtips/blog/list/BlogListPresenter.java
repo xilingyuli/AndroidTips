@@ -7,9 +7,12 @@ import com.google.gson.reflect.TypeToken;
 import com.tencent.cos.COSClient;
 import com.tencent.cos.model.COSRequest;
 import com.tencent.cos.model.COSResult;
+import com.tencent.cos.model.DeleteObjectRequest;
+import com.tencent.cos.model.DeleteObjectResult;
 import com.tencent.cos.model.ListDirRequest;
 import com.tencent.cos.model.ListDirResult;
 import com.tencent.cos.model.MoveObjectRequest;
+import com.tencent.cos.model.MoveObjectResult;
 import com.tencent.cos.task.listener.ICmdTaskListener;
 import com.xilingyuli.androidtips.model.CloudDataHelper;
 import com.xilingyuli.androidtips.model.CloudDataUtil;
@@ -27,15 +30,19 @@ class BlogListPresenter implements BlogListContract.Presenter {
 
     private COSClient client;
 
-    private ICmdTaskListener refreshListener,nextPageListener;
+    private ICmdTaskListener refreshListener,nextPageListener,renameBlogListener,deleteBlogListener;
     private String pageIndex = "";
 
     BlogListPresenter(BlogListContract.View view){
         this.view = view;
+        initListeners();
+    }
+
+    private void initListeners(){
         refreshListener = new ICmdTaskListener() {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                dealData(true, cosResult);
+                ((Fragment)view).getActivity().runOnUiThread(() -> dealData(true, cosResult));
             }
 
             @Override
@@ -46,12 +53,34 @@ class BlogListPresenter implements BlogListContract.Presenter {
         nextPageListener = new ICmdTaskListener() {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                dealData(false, cosResult);
+                ((Fragment)view).getActivity().runOnUiThread(() ->dealData(false, cosResult));
             }
 
             @Override
             public void onFailed(COSRequest cosRequest, COSResult cosResult) {
 
+            }
+        };
+        renameBlogListener = new ICmdTaskListener() {
+            @Override
+            public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
+                ((Fragment)view).getActivity().runOnUiThread(() ->refresh());
+            }
+
+            @Override
+            public void onFailed(COSRequest cosRequest, COSResult cosResult) {
+                MoveObjectResult result = (MoveObjectResult)cosResult;
+            }
+        };
+        deleteBlogListener = new ICmdTaskListener() {
+            @Override
+            public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
+                ((Fragment)view).getActivity().runOnUiThread(() ->refresh());
+            }
+
+            @Override
+            public void onFailed(COSRequest cosRequest, COSResult cosResult) {
+                DeleteObjectResult result = (DeleteObjectResult)cosResult;
             }
         };
     }
@@ -114,20 +143,27 @@ class BlogListPresenter implements BlogListContract.Presenter {
     }
 
     @Override
-    public void renameBlog(String accessUrl, String newName) {
+    public void renameBlog(String oldName, String newName) {
         if(client==null)
             client = CloudDataUtil.createCOSClient(((Fragment)view).getActivity());
         MoveObjectRequest request = (MoveObjectRequest) CloudDataHelper.createCOSRequest(
                 CloudDataHelper.ACTION_RENAME_BLOG,
-                null,
-                accessUrl.substring(accessUrl.lastIndexOf("/")+1),
+                renameBlogListener,
+                oldName,
                 newName
         );
         client.moveObjcet(request);
     }
 
     @Override
-    public void deleteBlog(String accessUrl) {
-
+    public void deleteBlog(String oldName) {
+        if(client==null)
+            client = CloudDataUtil.createCOSClient(((Fragment)view).getActivity());
+        DeleteObjectRequest request = (DeleteObjectRequest) CloudDataHelper.createCOSRequest(
+                CloudDataHelper.ACTION_DELETE_BLOG,
+                deleteBlogListener,
+                oldName
+        );
+        client.deleteObject(request);
     }
 }

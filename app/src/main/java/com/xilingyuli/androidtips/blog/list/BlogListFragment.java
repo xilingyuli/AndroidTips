@@ -1,6 +1,8 @@
 package com.xilingyuli.androidtips.blog.list;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -74,18 +76,39 @@ public class BlogListFragment extends Fragment implements BlogListContract.View 
     }
 
     @Override
-    public void showChooseOperationDialog(String accessUrl) {
-        new AlertDialog.Builder(this.getActivity())
+    public void showChooseOperationDialog(String name) {
+        new AlertDialog.Builder(getActivity())
                 .setItems(new String[]{"重命名","删除"}, (dialogInterface, i) -> {
                     switch (i){
                         case 0:
-                            presenter.renameBlog(accessUrl,"xx.md");
+                            showRenameBlogDialog(name);
                             break;
                         case 1:
-                            presenter.deleteBlog(accessUrl);
+                            showDeleteBlogDialog(name);
                             break;
                     }
                 }).show();
+    }
+
+    private void showRenameBlogDialog(String oldName){
+        View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_rename_blog,null);
+        TextInputEditText editText = (TextInputEditText)rootView.findViewById(R.id.title);
+        editText.setText(oldName.replace(".md",""));
+        new AlertDialog.Builder(getActivity())
+                .setTitle("重命名文章")
+                .setView(rootView)
+                .setPositiveButton("确定", (dialogInterface, i) -> presenter.renameBlog(oldName,editText.getText()+".md"))
+                .setNegativeButton("取消",null)
+                .show();
+    }
+
+    private void showDeleteBlogDialog(String oldName){
+        new AlertDialog.Builder(getActivity())
+                .setTitle("删除文章")
+                .setMessage("确定删除文章 "+oldName.replace(".md","")+" ？")
+                .setPositiveButton("确定", (dialogInterface, i) -> presenter.deleteBlog(oldName))
+                .setNegativeButton("取消",null)
+                .show();
     }
 }
 
