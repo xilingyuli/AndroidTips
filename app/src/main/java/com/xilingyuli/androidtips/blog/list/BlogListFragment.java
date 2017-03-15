@@ -2,6 +2,7 @@ package com.xilingyuli.androidtips.blog.list;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +31,7 @@ public class BlogListFragment extends Fragment implements BlogListContract.View 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new BlogListPresenter(this);
-        adapter = new BlogListRecyclerViewAdapter(this, getLayoutInflater(savedInstanceState));
+        adapter = new BlogListRecyclerViewAdapter(getLayoutInflater(savedInstanceState),presenter);
     }
 
     @Override
@@ -50,6 +51,7 @@ public class BlogListFragment extends Fragment implements BlogListContract.View 
         presenter.subscribe();
     }
 
+    @Override
     public void setPresenter(BlogListContract.Presenter presenter) {
         this.presenter = presenter;
     }
@@ -58,6 +60,32 @@ public class BlogListFragment extends Fragment implements BlogListContract.View 
     public void setData(List<Map<String, String>> data) {
         if(adapter!=null)
             adapter.setData(data);
+    }
+
+    @Override
+    public void addData(List<Map<String, String>> data) {
+        if(adapter!=null)
+            adapter.addData(data);
+    }
+
+    @Override
+    public void hasDataFinish(boolean isFinish) {
+
+    }
+
+    @Override
+    public void showChooseOperationDialog(String accessUrl) {
+        new AlertDialog.Builder(this.getActivity())
+                .setItems(new String[]{"重命名","删除"}, (dialogInterface, i) -> {
+                    switch (i){
+                        case 0:
+                            presenter.renameBlog(accessUrl,"xx.md");
+                            break;
+                        case 1:
+                            presenter.deleteBlog(accessUrl);
+                            break;
+                    }
+                }).show();
     }
 }
 

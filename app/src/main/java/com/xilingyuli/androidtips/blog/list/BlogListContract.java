@@ -13,8 +13,16 @@ import java.util.Map;
 interface BlogListContract {
     interface View extends BaseView<Presenter> {
         void setData(List<Map<String, String>> data);
+        void addData(List<Map<String, String>> data);
+        void hasDataFinish(boolean isFinish);
+
+        void showChooseOperationDialog(String accessUrl);
     }
     interface Presenter extends BasePresenter{
+        void viewBlog(String url);
+        void operateBlog(String accessUrl);
 
+        void renameBlog(String accessUrl, String newName);
+        void deleteBlog(String accessUrl);
     }
 }

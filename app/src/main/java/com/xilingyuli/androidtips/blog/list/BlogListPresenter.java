@@ -9,6 +9,7 @@ import com.tencent.cos.model.COSRequest;
 import com.tencent.cos.model.COSResult;
 import com.tencent.cos.model.ListDirRequest;
 import com.tencent.cos.model.ListDirResult;
+import com.tencent.cos.model.MoveObjectRequest;
 import com.tencent.cos.task.listener.ICmdTaskListener;
 import com.xilingyuli.androidtips.model.CloudDataHelper;
 import com.xilingyuli.androidtips.model.CloudDataUtil;
@@ -26,18 +27,26 @@ class BlogListPresenter implements BlogListContract.Presenter {
 
     private COSClient client;
 
-    private ICmdTaskListener refreshListener;
+    private ICmdTaskListener refreshListener,nextPageListener;
+    private String pageIndex = "";
 
     BlogListPresenter(BlogListContract.View view){
         this.view = view;
         refreshListener = new ICmdTaskListener() {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                ListDirResult result = (ListDirResult)cosResult;
-                Gson gson = new Gson();
-                List<Map<String, String>> data = gson.fromJson(result.infos.toString(),
-                        new TypeToken<List<Map<String, String>>>(){}.getType());
-                view.setData(data);
+                dealData(true, cosResult);
+            }
+
+            @Override
+            public void onFailed(COSRequest cosRequest, COSResult cosResult) {
+
+            }
+        };
+        nextPageListener = new ICmdTaskListener() {
+            @Override
+            public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
+                dealData(false, cosResult);
             }
 
             @Override
@@ -59,13 +68,66 @@ class BlogListPresenter implements BlogListContract.Presenter {
 
     public void refresh()
     {
+        requestData(true);
+    }
+
+    public void nextPage()
+    {
+        requestData(false);
+    }
+
+    private void requestData(boolean isRefresh){
+        if(isRefresh)
+            pageIndex = "";
         if(client==null)
             client = CloudDataUtil.createCOSClient(((Fragment)view).getActivity());
         ListDirRequest request = (ListDirRequest) CloudDataHelper.createCOSRequest(
                 CloudDataHelper.ACTION_LIST_BLOG,
-                refreshListener,
-                ""
+                isRefresh?refreshListener:nextPageListener,
+                pageIndex
         );
         client.listDir(request);
+    }
+
+    private void dealData(boolean isRefresh, COSResult cosResult){
+        ListDirResult result = (ListDirResult)cosResult;
+        Gson gson = new Gson();
+        List<Map<String, String>> data = gson.fromJson(result.infos.toString(),
+                new TypeToken<List<Map<String, String>>>(){}.getType());
+        pageIndex = result.context;
+
+        if(isRefresh)
+            view.setData(data);
+        else
+            view.addData(data);
+        view.hasDataFinish(result.listover);
+    }
+
+    @Override
+    public void viewBlog(String url) {
+
+    }
+
+    @Override
+    public void operateBlog(String accessUrl) {
+        view.showChooseOperationDialog(accessUrl);
+    }
+
+    @Override
+    public void renameBlog(String accessUrl, String newName) {
+        if(client==null)
+            client = CloudDataUtil.createCOSClient(((Fragment)view).getActivity());
+        MoveObjectRequest request = (MoveObjectRequest) CloudDataHelper.createCOSRequest(
+                CloudDataHelper.ACTION_RENAME_BLOG,
+                null,
+                accessUrl.substring(accessUrl.lastIndexOf("/")+1),
+                newName
+        );
+        client.moveObjcet(request);
+    }
+
+    @Override
+    public void deleteBlog(String accessUrl) {
+
     }
 }

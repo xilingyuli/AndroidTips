@@ -9,6 +9,7 @@ import com.tencent.cos.COSClientConfig;
 import com.tencent.cos.common.COSEndPoint;
 import com.tencent.cos.model.COSRequest;
 import com.tencent.cos.model.ListDirRequest;
+import com.tencent.cos.model.MoveObjectRequest;
 import com.tencent.cos.model.PutObjectRequest;
 import com.tencent.cos.model.PutObjectResult;
 import com.tencent.cos.task.listener.ITaskListener;
@@ -25,6 +26,8 @@ public class CloudDataHelper{
     public static final String ACTION_UPLOAD_IMAGE = "ACTION_UPLOAD_IMAGE";
     public static final String ACTION_UPLOAD_BLOG = "ACTION_UPLOAD_BLOG";
     public static final String ACTION_LIST_BLOG = "ACTION_LIST_BLOG";
+    public static final String ACTION_RENAME_BLOG = "ACTION_RENAME_BLOG";
+    public static final String ACTION_DELETE_BLOG = "ACTION_DELETE_BLOG";
 
     public enum OBJECT_TYPE {
         IMAGE("images"), BLOG("blogs");
@@ -43,6 +46,8 @@ public class CloudDataHelper{
                 return createUpdateObjectRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (File)params[2], true);
             case ACTION_LIST_BLOG:
                 return createListDirRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (String)params[2]);
+            case ACTION_RENAME_BLOG:
+                return createMoveObjectRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (String)params[2],(String)params[3]);
         }
         return null;
     }
@@ -76,5 +81,15 @@ public class CloudDataHelper{
         listDirRequest.setSign(signature);
         listDirRequest.setListener(listener);
         return listDirRequest;
+    }
+
+    private static MoveObjectRequest createMoveObjectRequest(ITaskListener listener, OBJECT_TYPE type, String oldName, String newName) {
+        MoveObjectRequest moveObjectRequest = new MoveObjectRequest();
+        moveObjectRequest.setBucket(CloudDataUtil.bucket);
+        moveObjectRequest.setCosPath(type.path+"/"+oldName);
+        moveObjectRequest.setDest_Filed(type.path+"/"+newName);
+        moveObjectRequest.setSign(CloudDataUtil.sign(false, ""));
+        moveObjectRequest.setListener(listener);
+        return moveObjectRequest;
     }
 }
