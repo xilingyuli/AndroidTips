@@ -139,6 +139,12 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.save(true);
+    }
+
     @OnClick(R.id.fab)
     public void onChangeClick()
     {

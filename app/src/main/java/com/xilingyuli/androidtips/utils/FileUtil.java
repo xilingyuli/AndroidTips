@@ -37,7 +37,7 @@ public class FileUtil {
         try {
             File dir = new File(ROOT_PATH);
             if(!dir.exists())
-                dir.mkdir();
+                dir.mkdirs();
             File file = new File(ROOT_PATH+name);
             file.createNewFile();
             fos = new FileOutputStream(file);

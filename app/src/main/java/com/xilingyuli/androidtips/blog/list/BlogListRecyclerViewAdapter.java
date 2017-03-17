@@ -99,7 +99,7 @@ class BlogListRecyclerViewAdapter extends RecyclerView.Adapter<BlogListRecyclerV
 
         @Override
         public void onClick(View view) {
-            presenter.viewBlog(url);
+            presenter.viewBlog(name,url);
         }
 
         @Override

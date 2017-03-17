@@ -1,5 +1,7 @@
 package com.xilingyuli.androidtips.blog.list;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 import com.google.gson.Gson;
@@ -14,11 +16,15 @@ import com.tencent.cos.model.ListDirResult;
 import com.tencent.cos.model.MoveObjectRequest;
 import com.tencent.cos.model.MoveObjectResult;
 import com.tencent.cos.task.listener.ICmdTaskListener;
+import com.xilingyuli.androidtips.blog.view.ReadBlogActivity;
 import com.xilingyuli.androidtips.model.CloudDataHelper;
 import com.xilingyuli.androidtips.model.CloudDataUtil;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.xilingyuli.androidtips.blog.view.ReadBlogActivity.BLOG_NAME;
+import static com.xilingyuli.androidtips.blog.view.ReadBlogActivity.BLOG_URL;
 
 /**
  * Created by xilingyuli on 2017/3/13.
@@ -133,13 +139,16 @@ class BlogListPresenter implements BlogListContract.Presenter {
     }
 
     @Override
-    public void viewBlog(String url) {
-
+    public void viewBlog(String name, String url) {
+        Intent intent = new Intent(((Fragment)view).getActivity(), ReadBlogActivity.class);
+        intent.putExtra(BLOG_NAME,name);
+        intent.putExtra(BLOG_URL,url);
+        ((Fragment)view).getActivity().startActivity(intent);
     }
 
     @Override
-    public void operateBlog(String accessUrl) {
-        view.showChooseOperationDialog(accessUrl);
+    public void operateBlog(String name) {
+        view.showChooseOperationDialog(name);
     }
 
     @Override

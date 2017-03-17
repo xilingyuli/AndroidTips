@@ -16,14 +16,16 @@ import com.xilingyuli.markdown.MarkDownEditorView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.xilingyuli.androidtips.blog.editor.EditorActivity.CONTENT;
+import static com.xilingyuli.androidtips.blog.editor.EditorActivity.TITLE;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link EditorFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class EditorFragment extends Fragment {
-    private static final String TITLE = "title";
-    private static final String CONTENT = "content";
+
     private String title;
     private String content;
     private boolean canChangeTitle = true;

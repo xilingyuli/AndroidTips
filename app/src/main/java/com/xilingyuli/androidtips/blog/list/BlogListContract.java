@@ -19,7 +19,7 @@ interface BlogListContract {
         void showChooseOperationDialog(String accessUrl);
     }
     interface Presenter extends BasePresenter{
-        void viewBlog(String url);
+        void viewBlog(String name, String url);
         void operateBlog(String name);
 
         void renameBlog(String oldName, String newName);

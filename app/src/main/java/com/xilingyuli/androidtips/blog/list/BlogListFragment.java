@@ -1,6 +1,5 @@
 package com.xilingyuli.androidtips.blog.list;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;

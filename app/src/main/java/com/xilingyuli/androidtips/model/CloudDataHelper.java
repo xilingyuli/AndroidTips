@@ -1,24 +1,14 @@
 package com.xilingyuli.androidtips.model;
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.AsyncTask;
 
-import com.tencent.cos.COSClient;
-import com.tencent.cos.COSClientConfig;
-import com.tencent.cos.common.COSEndPoint;
 import com.tencent.cos.model.COSRequest;
 import com.tencent.cos.model.DeleteObjectRequest;
 import com.tencent.cos.model.ListDirRequest;
 import com.tencent.cos.model.MoveObjectRequest;
 import com.tencent.cos.model.PutObjectRequest;
-import com.tencent.cos.model.PutObjectResult;
 import com.tencent.cos.task.listener.ITaskListener;
-import com.tencent.cos.task.listener.IUploadTaskListener;
-import com.tencent.cos.utils.COSPathUtils;
 
 import java.io.File;
-import java.net.URLEncoder;
 
 /**
  * Created by xilingyuli on 2017/3/11.
@@ -90,17 +80,12 @@ public class CloudDataHelper{
 
     private static MoveObjectRequest createMoveObjectRequest(ITaskListener listener, OBJECT_TYPE type, String oldName, String newName) {
         String cosPath = "/"+type.path+"/"+oldName;
-        try {
-            cosPath = "/"+type.path+"/"+URLEncoder.encode(oldName,"utf-8");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         String fullPath = "/"+CloudDataUtil.appId+"/"+CloudDataUtil.bucket+cosPath;
 
         MoveObjectRequest moveObjectRequest = new MoveObjectRequest();
         moveObjectRequest.setBucket(CloudDataUtil.bucket);
         moveObjectRequest.setCosPath(cosPath);
-        moveObjectRequest.setDest_Filed(type.path+"/"+newName);
+        moveObjectRequest.setDest_Filed(newName);
         moveObjectRequest.setSign(CloudDataUtil.sign(true, fullPath));
         moveObjectRequest.setListener(listener);
         return moveObjectRequest;
@@ -109,11 +94,6 @@ public class CloudDataHelper{
 
     private static DeleteObjectRequest createDeleteObjectRequest(ITaskListener listener, OBJECT_TYPE type, String name){
         String cosPath = "/"+type.path+"/"+name;
-        try {
-            cosPath = "/"+type.path+"/"+URLEncoder.encode(name,"utf-8");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         String fullPath = "/"+CloudDataUtil.appId+"/"+CloudDataUtil.bucket+cosPath;
 
         DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest();
@@ -123,4 +103,5 @@ public class CloudDataHelper{
         deleteObjectRequest.setListener(listener);
         return deleteObjectRequest;
     }
+
 }
