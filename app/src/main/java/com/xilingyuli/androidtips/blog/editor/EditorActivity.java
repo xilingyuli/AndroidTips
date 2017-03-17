@@ -80,7 +80,7 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
         final PreviewFragment previewFragment = PreviewFragment.newInstance();
 
         //setPresenter
-        setPresenter(new EditorPresenter(toolsAdapter,editorFragment,previewFragment,this));
+        setPresenter(new EditorPresenter(this,toolsAdapter,editorFragment,previewFragment,this));
         editorFragment.setPresenter(presenter);
         previewFragment.setPresenter(presenter);
 
@@ -139,12 +139,6 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.save(true);
-    }
-
     @OnClick(R.id.fab)
     public void onChangeClick()
     {
@@ -173,7 +167,7 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.editor, menu);
+        getMenuInflater().inflate(R.menu.activity_editor, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -246,7 +240,7 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
 
     @Override
     public void showAlertDialog(String error) {
-        this.runOnUiThread(() -> Toast.makeText(EditorActivity.this,error,Toast.LENGTH_SHORT).show());
+        Toast.makeText(EditorActivity.this,error,Toast.LENGTH_SHORT).show();
     }
 
     @Override

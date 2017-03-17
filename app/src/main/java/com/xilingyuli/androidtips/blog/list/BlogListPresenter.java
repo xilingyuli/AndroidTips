@@ -16,15 +16,15 @@ import com.tencent.cos.model.ListDirResult;
 import com.tencent.cos.model.MoveObjectRequest;
 import com.tencent.cos.model.MoveObjectResult;
 import com.tencent.cos.task.listener.ICmdTaskListener;
-import com.xilingyuli.androidtips.blog.view.ReadBlogActivity;
+import com.xilingyuli.androidtips.blog.read.ReadBlogActivity;
 import com.xilingyuli.androidtips.model.CloudDataHelper;
 import com.xilingyuli.androidtips.model.CloudDataUtil;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.xilingyuli.androidtips.blog.view.ReadBlogActivity.BLOG_NAME;
-import static com.xilingyuli.androidtips.blog.view.ReadBlogActivity.BLOG_URL;
+import static com.xilingyuli.androidtips.blog.read.ReadBlogActivity.BLOG_NAME;
+import static com.xilingyuli.androidtips.blog.read.ReadBlogActivity.BLOG_URL;
 
 /**
  * Created by xilingyuli on 2017/3/13.
@@ -32,6 +32,7 @@ import static com.xilingyuli.androidtips.blog.view.ReadBlogActivity.BLOG_URL;
 
 class BlogListPresenter implements BlogListContract.Presenter {
 
+    private Activity activity;
     private BlogListContract.View view;
 
     private COSClient client;
@@ -39,7 +40,8 @@ class BlogListPresenter implements BlogListContract.Presenter {
     private ICmdTaskListener refreshListener,nextPageListener,renameBlogListener,deleteBlogListener;
     private String pageIndex = "";
 
-    BlogListPresenter(BlogListContract.View view){
+    BlogListPresenter(Activity activity, BlogListContract.View view){
+        this.activity = activity;
         this.view = view;
         initListeners();
     }
@@ -48,7 +50,7 @@ class BlogListPresenter implements BlogListContract.Presenter {
         refreshListener = new ICmdTaskListener() {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                ((Fragment)view).getActivity().runOnUiThread(() -> dealData(true, cosResult));
+                activity.runOnUiThread(() -> dealData(true, cosResult));
             }
 
             @Override
@@ -59,7 +61,7 @@ class BlogListPresenter implements BlogListContract.Presenter {
         nextPageListener = new ICmdTaskListener() {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                ((Fragment)view).getActivity().runOnUiThread(() ->dealData(false, cosResult));
+                activity.runOnUiThread(() ->dealData(false, cosResult));
             }
 
             @Override
@@ -70,7 +72,7 @@ class BlogListPresenter implements BlogListContract.Presenter {
         renameBlogListener = new ICmdTaskListener() {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                ((Fragment)view).getActivity().runOnUiThread(() ->refresh());
+                activity.runOnUiThread(() ->refresh());
             }
 
             @Override
@@ -81,7 +83,7 @@ class BlogListPresenter implements BlogListContract.Presenter {
         deleteBlogListener = new ICmdTaskListener() {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                ((Fragment)view).getActivity().runOnUiThread(() ->refresh());
+                activity.runOnUiThread(() ->refresh());
             }
 
             @Override
@@ -115,7 +117,7 @@ class BlogListPresenter implements BlogListContract.Presenter {
         if(isRefresh)
             pageIndex = "";
         if(client==null)
-            client = CloudDataUtil.createCOSClient(((Fragment)view).getActivity());
+            client = CloudDataUtil.createCOSClient(activity);
         ListDirRequest request = (ListDirRequest) CloudDataHelper.createCOSRequest(
                 CloudDataHelper.ACTION_LIST_BLOG,
                 isRefresh?refreshListener:nextPageListener,
@@ -140,10 +142,10 @@ class BlogListPresenter implements BlogListContract.Presenter {
 
     @Override
     public void viewBlog(String name, String url) {
-        Intent intent = new Intent(((Fragment)view).getActivity(), ReadBlogActivity.class);
-        intent.putExtra(BLOG_NAME,name);
+        Intent intent = new Intent(activity, ReadBlogActivity.class);
+        intent.putExtra(BLOG_NAME,name.replace(".md",""));
         intent.putExtra(BLOG_URL,url);
-        ((Fragment)view).getActivity().startActivity(intent);
+        activity.startActivity(intent);
     }
 
     @Override
@@ -154,7 +156,7 @@ class BlogListPresenter implements BlogListContract.Presenter {
     @Override
     public void renameBlog(String oldName, String newName) {
         if(client==null)
-            client = CloudDataUtil.createCOSClient(((Fragment)view).getActivity());
+            client = CloudDataUtil.createCOSClient(activity);
         MoveObjectRequest request = (MoveObjectRequest) CloudDataHelper.createCOSRequest(
                 CloudDataHelper.ACTION_RENAME_BLOG,
                 renameBlogListener,
@@ -167,7 +169,7 @@ class BlogListPresenter implements BlogListContract.Presenter {
     @Override
     public void deleteBlog(String oldName) {
         if(client==null)
-            client = CloudDataUtil.createCOSClient(((Fragment)view).getActivity());
+            client = CloudDataUtil.createCOSClient(activity);
         DeleteObjectRequest request = (DeleteObjectRequest) CloudDataHelper.createCOSRequest(
                 CloudDataHelper.ACTION_DELETE_BLOG,
                 deleteBlogListener,

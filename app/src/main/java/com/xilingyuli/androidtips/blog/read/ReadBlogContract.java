@@ -1,10 +1,7 @@
-package com.xilingyuli.androidtips.blog.view;
+package com.xilingyuli.androidtips.blog.read;
 
 import com.xilingyuli.androidtips.BasePresenter;
 import com.xilingyuli.androidtips.BaseView;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by xilingyuli on 2017/3/13.
@@ -15,6 +12,7 @@ interface ReadBlogContract {
 
     }
     interface Presenter extends BasePresenter{
-        void setUrl(String url);
+        void setNameAndUrl(String name, String url);
+        void edit();
     }
 }

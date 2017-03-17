@@ -1,7 +1,9 @@
-package com.xilingyuli.androidtips.blog.view;
+package com.xilingyuli.androidtips.blog.read;
 
 import android.app.Activity;
+import android.content.Intent;
 
+import com.xilingyuli.androidtips.blog.editor.EditorActivity;
 import com.xilingyuli.markdown.MarkDownPreviewView;
 
 import java.io.IOException;
@@ -12,27 +14,44 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.xilingyuli.androidtips.blog.editor.EditorActivity.CONTENT;
+import static com.xilingyuli.androidtips.blog.editor.EditorActivity.TITLE;
+
 /**
  * Created by xilingyuli on 2017/3/17.
  */
 
 public class ReadBlogPresenter implements ReadBlogContract.Presenter {
 
-    ReadBlogContract.View view;
-    MarkDownPreviewView previewView;
+    private Activity activity;
+    private ReadBlogContract.View view;
+    private MarkDownPreviewView previewView;
 
-    String url;
-    OkHttpClient client;
+    private String name,url;
+    private String content;
+    private OkHttpClient client;
 
-    ReadBlogPresenter(ReadBlogContract.View view, MarkDownPreviewView previewView){
+    ReadBlogPresenter(Activity activity, ReadBlogContract.View view, MarkDownPreviewView previewView){
+        this.activity = activity;
         this.view = view;
         this.previewView = previewView;
         client = new OkHttpClient();
     }
 
     @Override
-    public void setUrl(String url) {
+    public void setNameAndUrl(String name, String url) {
+        this.name = name;
         this.url = url;
+    }
+
+    @Override
+    public void edit() {
+        if(name==null||name.isEmpty())
+            return;
+        Intent intent = new Intent(activity, EditorActivity.class);
+        intent.putExtra(TITLE,name);
+        intent.putExtra(CONTENT,content);
+        activity.startActivity(intent);
     }
 
     @Override
@@ -57,7 +76,7 @@ public class ReadBlogPresenter implements ReadBlogContract.Presenter {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
+                content = response.body().string();
                 ((Activity)view).runOnUiThread(()->previewView.preview(content));
             }
         });

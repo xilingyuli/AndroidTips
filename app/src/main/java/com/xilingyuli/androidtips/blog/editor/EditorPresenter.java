@@ -26,6 +26,7 @@ import java.io.File;
 
 class EditorPresenter implements EditorContract.Presenter {
 
+    private Activity activity;
     private EditorContract.View view;
     private EditorFragment editorFragment;
     private PreviewFragment previewFragment;
@@ -38,8 +39,9 @@ class EditorPresenter implements EditorContract.Presenter {
     private IUploadTaskListener uploadImageListener,uploadBlogListener;
 
 
-    EditorPresenter(ToolsAdapter toolsAdapter, EditorFragment editorFragment, PreviewFragment previewFragment, EditorContract.View view)
+    EditorPresenter(Activity activity, ToolsAdapter toolsAdapter, EditorFragment editorFragment, PreviewFragment previewFragment, EditorContract.View view)
     {
+        this.activity = activity;
         this.view = view;
         this.editorFragment = editorFragment;
         this.previewFragment = previewFragment;
@@ -49,7 +51,7 @@ class EditorPresenter implements EditorContract.Presenter {
         uploadImageListener = new IUploadTaskListener() {
             @Override
             public void onProgress(COSRequest cosRequest, long l, long l1) {
-                view.showProcessDialog((int)(l/l1));
+                activity.runOnUiThread(() -> view.showProcessDialog((int)(l/l1)));
             }
 
             @Override
@@ -58,19 +60,19 @@ class EditorPresenter implements EditorContract.Presenter {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
                 if(markDownController!=null) {
-                    ((Activity) view).runOnUiThread(() -> markDownController.insertImage(((PutObjectResult) cosResult).source_url));
+                    activity.runOnUiThread(() -> markDownController.insertImage(((PutObjectResult) cosResult).source_url));
                 }
             }
 
             @Override
             public void onFailed(COSRequest cosRequest, COSResult cosResult) {
-                view.showAlertDialog(cosResult.msg);
+                activity.runOnUiThread(() -> view.showAlertDialog(cosResult.msg));
             }
         };
         uploadBlogListener = new IUploadTaskListener() {
             @Override
             public void onProgress(COSRequest cosRequest, long l, long l1) {
-                view.showProcessDialog((int)(l/l1));
+                activity.runOnUiThread(() -> view.showProcessDialog((int)(l/l1)));
             }
 
             @Override
@@ -79,12 +81,12 @@ class EditorPresenter implements EditorContract.Presenter {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
                 editorFragment.setNeedSave(false);
-                view.showAlertDialog("上传成功");
+                activity.runOnUiThread(() -> view.showAlertDialog("上传成功"));
             }
 
             @Override
             public void onFailed(COSRequest cosRequest, COSResult cosResult) {
-                view.showAlertDialog(cosResult.msg);
+                activity.runOnUiThread(() -> view.showAlertDialog(cosResult.msg));
             }
         };
     }
@@ -115,7 +117,7 @@ class EditorPresenter implements EditorContract.Presenter {
 
     @Override
     public boolean save(boolean local) {
-        if(!FileUtil.requestWritePermission((Activity)view))
+        if(!FileUtil.requestWritePermission(activity))
             return false;
         String title = editorFragment.getTitle();
         if(title.isEmpty()){
@@ -134,7 +136,7 @@ class EditorPresenter implements EditorContract.Presenter {
         }
 
         if(client==null)
-            client = CloudDataUtil.createCOSClient((Activity)view);
+            client = CloudDataUtil.createCOSClient(activity);
         PutObjectRequest request = (PutObjectRequest) CloudDataHelper.createCOSRequest(
                 CloudDataHelper.ACTION_UPLOAD_BLOG,
                 uploadBlogListener,
@@ -162,7 +164,7 @@ class EditorPresenter implements EditorContract.Presenter {
     @Override
     public void insertImage(final String path) {
         if(client==null)
-            client = CloudDataUtil.createCOSClient((Activity)view);
+            client = CloudDataUtil.createCOSClient(activity);
         PutObjectRequest request = (PutObjectRequest) CloudDataHelper.createCOSRequest(
                 CloudDataHelper.ACTION_UPLOAD_IMAGE,
                 uploadImageListener,
