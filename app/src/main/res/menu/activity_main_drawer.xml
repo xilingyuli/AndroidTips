@@ -3,9 +3,14 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:checked="true"
             android:id="@+id/nav_blog"
             android:icon="@drawable/ic_menu_blog"
             android:title="Blog" />
+        <item
+            android:id="@+id/nav_draft"
+            android:icon="@drawable/ic_menu_draft"
+            android:title="Draft" />
         <item
             android:id="@+id/nav_favorite"
             android:icon="@drawable/ic_menu_favorite"

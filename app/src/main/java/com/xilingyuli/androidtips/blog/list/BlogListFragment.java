@@ -1,8 +1,5 @@
 package com.xilingyuli.androidtips.blog.list;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -20,21 +17,31 @@ import java.util.Map;
 
 public class BlogListFragment extends Fragment implements BlogListContract.View {
 
-    BlogListRecyclerViewAdapter adapter;
+    private BlogListRecyclerViewAdapter adapter;
+    private BlogListContract.Presenter presenter;
 
-    BlogListContract.Presenter presenter;
+    private boolean isDraft = false;
 
     public BlogListFragment() {
     }
 
-    public static BlogListFragment newInstance() {
-        return new BlogListFragment();
+    public static BlogListFragment newInstance(boolean isDraft) {
+        BlogListFragment fragment = new BlogListFragment();
+        fragment.setDraft(isDraft);
+        return fragment;
+    }
+
+    private void setDraft(boolean draft) {
+        isDraft = draft;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = new BlogListPresenter(this.getActivity(),this);
+        if(isDraft)
+            presenter = new DraftListPresenter(this.getActivity(), this);
+        else
+            presenter = new BlogListPresenter(this.getActivity(),this);
         adapter = new BlogListRecyclerViewAdapter(getLayoutInflater(savedInstanceState),presenter);
     }
 

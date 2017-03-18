@@ -103,11 +103,13 @@ class BlogListPresenter implements BlogListContract.Presenter {
 
     }
 
+    @Override
     public void refresh()
     {
         requestData(true);
     }
 
+    @Override
     public void nextPage()
     {
         requestData(false);

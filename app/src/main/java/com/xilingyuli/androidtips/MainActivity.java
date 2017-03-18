@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        blogListFragment = BlogListFragment.newInstance();
+        blogListFragment = BlogListFragment.newInstance(true);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.content_main,blogListFragment);
+        transaction.add(R.id.content_main, blogListFragment);
         transaction.commit();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);

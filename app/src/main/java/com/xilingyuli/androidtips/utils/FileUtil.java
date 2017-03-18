@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 /**
@@ -57,5 +58,42 @@ public class FileUtil {
                 e.printStackTrace();
             }
         }
+    }
+    public static String readFile(String name)
+    {
+        if(name==null||name.isEmpty())
+            return "";
+        FileInputStream fis = null;
+        byte[] buffer;
+        try {
+            fis = new FileInputStream(ROOT_PATH+name);
+            buffer = new byte[fis.available()];
+            fis.read(buffer);
+            return new String(buffer);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return "";
+        }
+        finally {
+            try {
+                if(fis!=null)
+                    fis.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    public static boolean renameFile(String oldName, String newName){
+        File old = new File(ROOT_PATH+oldName);
+        return old.renameTo(new File(ROOT_PATH+newName));
+    }
+    public static boolean deleteFile(String name){
+        File file = new File(ROOT_PATH+name);
+        return file.delete();
+    }
+    public static File[] listFiles()
+    {
+        return new File(ROOT_PATH).listFiles();
     }
 }

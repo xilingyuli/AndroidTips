@@ -24,5 +24,8 @@ interface BlogListContract {
 
         void renameBlog(String oldName, String newName);
         void deleteBlog(String oldName);
+
+        void refresh();
+        void nextPage();
     }
 }
