@@ -22,8 +22,10 @@ public class CloudDataHelper{
     public static final String ACTION_RENAME_BLOG = "ACTION_RENAME_BLOG";
     public static final String ACTION_DELETE_BLOG = "ACTION_DELETE_BLOG";
 
+    public static final String ACTION_LIST_SITE = "ACTION_LIST_SITE";
+
     public enum OBJECT_TYPE {
-        IMAGE("images"), BLOG("blogs");
+        IMAGE("images"), BLOG("blogs"), SITE("sites");
         public final String path;
         OBJECT_TYPE(String path) {
             this.path = path;
@@ -43,6 +45,8 @@ public class CloudDataHelper{
                 return createMoveObjectRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (String)params[2],(String)params[3]);
             case ACTION_DELETE_BLOG:
                 return createDeleteObjectRequest((ITaskListener)params[1], OBJECT_TYPE.BLOG, (String)params[2]);
+            case ACTION_LIST_SITE:
+                return createListDirRequest((ITaskListener)params[1], OBJECT_TYPE.SITE, (String)params[2]);
         }
         return null;
     }

@@ -7,6 +7,7 @@ import com.xilingyuli.androidtips.blog.editor.EditorActivity;
 import com.xilingyuli.androidtips.utils.FileUtil;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +52,7 @@ class DraftListPresenter implements BlogListContract.Presenter {
     }
 
     private void requestData(boolean isRefresh){
-        File[] files = FileUtil.listFiles();
+        File[] files = FileUtil.listFiles("md");
         List<Map<String, String>> data = new ArrayList<>();
         for(File file : files){
             Map<String,String> map = new HashMap<>();

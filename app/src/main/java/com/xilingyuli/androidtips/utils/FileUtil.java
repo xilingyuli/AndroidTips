@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 
 /**
  * Created by xilingyuli on 2017/3/12.
@@ -92,8 +93,8 @@ public class FileUtil {
         File file = new File(ROOT_PATH+name);
         return file.delete();
     }
-    public static File[] listFiles()
+    public static File[] listFiles(String suffix)
     {
-        return new File(ROOT_PATH).listFiles();
+        return new File(ROOT_PATH).listFiles((file, s) -> s.endsWith("."+suffix));
     }
 }
