@@ -21,7 +21,11 @@ import com.xilingyuli.androidtips.blog.read.ReadBlogActivity;
 import com.xilingyuli.androidtips.model.CloudDataHelper;
 import com.xilingyuli.androidtips.model.CloudDataUtil;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.xilingyuli.androidtips.blog.read.ReadBlogActivity.BLOG_NAME;
@@ -102,5 +106,16 @@ class BlogListPresenter extends BaseListPresenter implements BlogListContract.Pr
                 oldName
         );
         client.deleteObject(request);
+    }
+
+    @Override
+    public List<Map<String, String>> formatData(List<Map<String, String>> data)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        for(Map<String,String> map:data){
+            map.put("fname",map.get("name").replace(".md",""));
+            map.put("fctime",sdf.format(new Date(Long.parseLong(map.get("ctime"))*1000)));
+        }
+        return data;
     }
 }

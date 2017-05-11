@@ -22,14 +22,12 @@ class BlogListRecyclerViewAdapter extends RecyclerView.Adapter<BlogListRecyclerV
 
     private LayoutInflater inflater;
     private List<Map<String, String>> data;
-    private SimpleDateFormat sdf;
 
     private BlogListContract.Presenter presenter;
 
     BlogListRecyclerViewAdapter(LayoutInflater inflater, BlogListContract.Presenter presenter){
         this.inflater = inflater;
         this.presenter = presenter;
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
     }
 
     public void setData(List<Map<String, String>> data){
@@ -53,11 +51,10 @@ class BlogListRecyclerViewAdapter extends RecyclerView.Adapter<BlogListRecyclerV
 
     @Override
     public void onBindViewHolder(ToolsViewHolder holder, int position) {
-        Date date = new Date(Long.parseLong(data.get(position).get("ctime"))*1000);
         holder.setData(
                 (position+1)+"",
-                (data.get(position).get("name")).replace(".md",""),
-                sdf.format(date),
+                data.get(position).get("fname"),
+                data.get(position).get("fctime"),
                 data.get(position).get("source_url"),
                 data.get(position).get("name")
         );

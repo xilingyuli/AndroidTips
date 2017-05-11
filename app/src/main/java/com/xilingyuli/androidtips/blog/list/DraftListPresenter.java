@@ -8,9 +8,12 @@ import com.xilingyuli.androidtips.utils.FileUtil;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.xilingyuli.androidtips.blog.editor.EditorActivity.CONTENT;
@@ -60,6 +63,7 @@ class DraftListPresenter implements BlogListContract.Presenter {
             map.put("ctime",(file.lastModified()/1000)+"");
             data.add(map);
         }
+        data = formatData(data);
         view.setData(data);
         view.hasDataFinish(true);
     }
@@ -87,5 +91,15 @@ class DraftListPresenter implements BlogListContract.Presenter {
     public void deleteBlog(String oldName) {
         FileUtil.deleteFile(oldName);
         refresh();
+    }
+
+    @Override
+    public List<Map<String, String>> formatData(List<Map<String, String>> data) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        for(Map<String,String> map:data){
+            map.put("fname",map.get("name").replace(".md",""));
+            map.put("fctime",sdf.format(new Date(Long.parseLong(map.get("ctime"))*1000)));
+        }
+        return data;
     }
 }

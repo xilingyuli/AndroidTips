@@ -7,10 +7,8 @@ import com.google.gson.reflect.TypeToken;
 import com.tencent.cos.COSClient;
 import com.tencent.cos.model.COSRequest;
 import com.tencent.cos.model.COSResult;
-import com.tencent.cos.model.DeleteObjectResult;
 import com.tencent.cos.model.ListDirRequest;
 import com.tencent.cos.model.ListDirResult;
-import com.tencent.cos.model.MoveObjectResult;
 import com.tencent.cos.task.listener.ICmdTaskListener;
 import com.xilingyuli.androidtips.model.CloudDataHelper;
 import com.xilingyuli.androidtips.model.CloudDataUtil;
@@ -44,7 +42,7 @@ public class BaseListPresenter implements BaseListContract.Presenter {
         refreshListener = new ICmdTaskListener() {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                activity.runOnUiThread(() -> dealData(true, cosResult));
+                dealData(true, cosResult);
             }
 
             @Override
@@ -55,7 +53,7 @@ public class BaseListPresenter implements BaseListContract.Presenter {
         nextPageListener = new ICmdTaskListener() {
             @Override
             public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                activity.runOnUiThread(() ->dealData(false, cosResult));
+                dealData(false, cosResult);
             }
 
             @Override
@@ -105,12 +103,21 @@ public class BaseListPresenter implements BaseListContract.Presenter {
         Gson gson = new Gson();
         List<Map<String, String>> data = gson.fromJson(result.infos.toString(),
                 new TypeToken<List<Map<String, String>>>(){}.getType());
+        List<Map<String, String>> formatedData = formatData(data);
         pageIndex = result.context;
 
-        if(isRefresh)
-            view.setData(data);
-        else
-            view.addData(data);
-        view.hasDataFinish(result.listover);
+        activity.runOnUiThread(() -> {
+            if (isRefresh)
+                view.setData(data);
+            else
+                view.addData(data);
+            view.hasDataFinish(result.listover);
+        });
+    }
+
+    @Override
+    public List<Map<String, String>> formatData(List<Map<String, String>> data)
+    {
+        return data;
     }
 }

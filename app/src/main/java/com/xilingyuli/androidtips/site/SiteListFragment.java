@@ -52,7 +52,7 @@ public class SiteListFragment extends Fragment implements SiteListContract.View{
                 getActivity(),
                 data,
                 android.R.layout.simple_list_item_2,
-                new String[]{"name","ctime"},
+                new String[]{"fname","fctime"},
                 new int[]{android.R.id.text1,android.R.id.text2});
     }
 
@@ -82,7 +82,8 @@ public class SiteListFragment extends Fragment implements SiteListContract.View{
 
     @Override
     public void setData(List<Map<String, String>> data) {
-        this.data = data;
+        this.data.clear();
+        this.data.addAll(data);
         adapter.notifyDataSetChanged();
     }
 

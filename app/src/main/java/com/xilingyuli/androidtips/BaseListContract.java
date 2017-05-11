@@ -14,6 +14,7 @@ public interface BaseListContract {
         void hasDataFinish(boolean isFinish);
     }
     interface Presenter extends BasePresenter {
+        List<Map<String, String>> formatData(List<Map<String, String>> data);
         void refresh();
         void nextPage();
     }
