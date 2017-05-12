@@ -9,7 +9,10 @@ import com.xilingyuli.androidtips.BaseListContract;
 
 interface SiteListContract extends BaseListContract {
     interface View extends BaseListContract.View<Presenter> {
+        void showAddSiteDialog();
+        void showAlertDialog(String error);
     }
     interface Presenter extends BaseListContract.Presenter{
+        void saveSite(String name, String url);
     }
 }

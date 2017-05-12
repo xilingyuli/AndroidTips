@@ -21,11 +21,13 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private int selectedId = R.id.nav_blog;
+
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
 
-    BlogListFragment blogListFragment,draftListFragment;
-    SiteListFragment siteListFragment;
+    private BlogListFragment blogListFragment,draftListFragment;
+    private SiteListFragment siteListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +56,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @OnClick(R.id.fab)
-    public void createBlog(){
-        Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-        startActivity(intent);
+    public void clickFab(){
+        switch (selectedId) {
+            case R.id.nav_blog:
+            case R.id.nav_draft:
+                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_site:
+                siteListFragment.showAddSiteDialog();
+                break;
+        }
     }
 
     @Override
@@ -71,8 +81,8 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id){
+        selectedId = item.getItemId();
+        switch (selectedId){
             case R.id.nav_blog:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.content_main, blogListFragment).commit();

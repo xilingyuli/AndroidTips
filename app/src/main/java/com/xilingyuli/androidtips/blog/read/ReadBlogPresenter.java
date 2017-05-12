@@ -77,7 +77,7 @@ public class ReadBlogPresenter implements ReadBlogContract.Presenter {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 content = response.body().string();
-                ((Activity)view).runOnUiThread(()->previewView.preview(content));
+                activity.runOnUiThread(()->previewView.preview(content));
             }
         });
     }

@@ -31,7 +31,8 @@
             android:name=".blog.editor.EditorActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".BaseActivity" />
-        <activity android:name=".blog.read.ReadBlogActivity"></activity>
+        <activity android:name=".blog.read.ReadBlogActivity" />
+        <activity android:name=".widget.WebViewActivity"></activity>
     </application>
 
 </manifest>

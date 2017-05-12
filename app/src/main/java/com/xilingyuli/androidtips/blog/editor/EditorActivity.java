@@ -203,12 +203,7 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
         new AlertDialog.Builder(this)
                 .setTitle("插入链接")
                 .setView(view)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        presenter.insertLink(new Pair<String, String>(name.getText()+"",url.getText()+""));
-                    }
-                })
+                .setPositiveButton("确定", (dialogInterface, i) -> presenter.insertLink(new Pair<>(name.getText() + "", url.getText() + "")))
                 .setNegativeButton("取消",null)
                 .show();
     }
@@ -221,14 +216,9 @@ public class EditorActivity extends BaseActivity implements EditorContract.View 
         new AlertDialog.Builder(this)
                 .setTitle("插入表格")
                 .setView(view)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        presenter.insertTable(new Pair<Integer, Integer>(
-                                Integer.parseInt(row.getText()+""),
-                                Integer.parseInt(column.getText()+"")));
-                    }
-                })
+                .setPositiveButton("确定", (dialogInterface, i) -> presenter.insertTable(new Pair<>(
+                        Integer.parseInt(row.getText() + ""),
+                        Integer.parseInt(column.getText() + ""))))
                 .setNegativeButton("取消",null)
                 .show();
     }
