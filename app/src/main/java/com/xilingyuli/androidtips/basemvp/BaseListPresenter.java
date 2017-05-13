@@ -1,4 +1,4 @@
-package com.xilingyuli.androidtips;
+package com.xilingyuli.androidtips.basemvp;
 
 import android.app.Activity;
 
@@ -85,7 +85,7 @@ public class BaseListPresenter implements BaseListContract.Presenter {
         requestData(false);
     }
 
-    private void requestData(boolean isRefresh){
+    protected void requestData(boolean isRefresh){
         if(isRefresh)
             pageIndex = "";
         if(client==null)
@@ -98,7 +98,7 @@ public class BaseListPresenter implements BaseListContract.Presenter {
         client.listDir(request);
     }
 
-    private void dealData(boolean isRefresh, COSResult cosResult){
+    protected void dealData(boolean isRefresh, COSResult cosResult){
         ListDirResult result = (ListDirResult)cosResult;
         Gson gson = new Gson();
         List<Map<String, String>> data = gson.fromJson(result.infos.toString(),
@@ -108,9 +108,9 @@ public class BaseListPresenter implements BaseListContract.Presenter {
 
         activity.runOnUiThread(() -> {
             if (isRefresh)
-                view.setData(data);
+                view.setData(formatedData);
             else
-                view.addData(data);
+                view.addData(formatedData);
             view.hasDataFinish(result.listover);
         });
     }

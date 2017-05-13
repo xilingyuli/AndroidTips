@@ -1,4 +1,4 @@
-package com.xilingyuli.androidtips;
+package com.xilingyuli.androidtips.basemvp;
 
 /**
  * Created by xilingyuli on 2017/3/9.

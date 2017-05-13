@@ -1,4 +1,4 @@
-package com.xilingyuli.androidtips;
+package com.xilingyuli.androidtips.basemvp;
 
 import java.util.List;
 import java.util.Map;

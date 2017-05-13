@@ -2,8 +2,8 @@ package com.xilingyuli.androidtips.blog.editor;
 
 import android.util.Pair;
 
-import com.xilingyuli.androidtips.BasePresenter;
-import com.xilingyuli.androidtips.BaseView;
+import com.xilingyuli.androidtips.basemvp.BasePresenter;
+import com.xilingyuli.androidtips.basemvp.BaseView;
 import com.xilingyuli.markdown.MarkDownEditorView;
 import com.xilingyuli.markdown.MarkDownPreviewView;
 import com.xilingyuli.markdown.OnPreInsertListener;

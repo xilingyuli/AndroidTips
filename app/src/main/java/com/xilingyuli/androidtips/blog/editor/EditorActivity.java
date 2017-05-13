@@ -1,7 +1,6 @@
 package com.xilingyuli.androidtips.blog.editor;
 
 import android.animation.LayoutTransition;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +20,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.xilingyuli.androidtips.BaseActivity;
+import com.xilingyuli.androidtips.basemvp.BaseActivity;
 import com.xilingyuli.androidtips.R;
 import com.xilingyuli.androidtips.utils.RealPathUtil;
 import com.xilingyuli.markdown.ToolsAdapter;

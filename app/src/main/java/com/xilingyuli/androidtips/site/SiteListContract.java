@@ -1,6 +1,6 @@
 package com.xilingyuli.androidtips.site;
 
-import com.xilingyuli.androidtips.BaseListContract;
+import com.xilingyuli.androidtips.basemvp.BaseListContract;
 
 
 /**

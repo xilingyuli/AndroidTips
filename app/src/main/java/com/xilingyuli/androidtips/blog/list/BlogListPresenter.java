@@ -2,27 +2,20 @@ package com.xilingyuli.androidtips.blog.list;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.tencent.cos.COSClient;
 import com.tencent.cos.model.COSRequest;
 import com.tencent.cos.model.COSResult;
 import com.tencent.cos.model.DeleteObjectRequest;
 import com.tencent.cos.model.DeleteObjectResult;
-import com.tencent.cos.model.ListDirRequest;
-import com.tencent.cos.model.ListDirResult;
 import com.tencent.cos.model.MoveObjectRequest;
 import com.tencent.cos.model.MoveObjectResult;
 import com.tencent.cos.task.listener.ICmdTaskListener;
-import com.xilingyuli.androidtips.BaseListPresenter;
+import com.xilingyuli.androidtips.basemvp.BaseListPresenter;
 import com.xilingyuli.androidtips.blog.read.ReadBlogActivity;
 import com.xilingyuli.androidtips.model.CloudDataHelper;
 import com.xilingyuli.androidtips.model.CloudDataUtil;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;

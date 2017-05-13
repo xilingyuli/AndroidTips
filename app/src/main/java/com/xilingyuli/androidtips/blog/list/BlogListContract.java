@@ -1,11 +1,6 @@
 package com.xilingyuli.androidtips.blog.list;
 
-import com.xilingyuli.androidtips.BaseListContract;
-import com.xilingyuli.androidtips.BasePresenter;
-import com.xilingyuli.androidtips.BaseView;
-
-import java.util.List;
-import java.util.Map;
+import com.xilingyuli.androidtips.basemvp.BaseListContract;
 
 /**
  * Created by xilingyuli on 2017/3/13.

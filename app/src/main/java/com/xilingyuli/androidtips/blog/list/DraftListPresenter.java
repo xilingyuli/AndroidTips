@@ -3,7 +3,10 @@ package com.xilingyuli.androidtips.blog.list;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.tencent.cos.model.COSResult;
+import com.xilingyuli.androidtips.basemvp.BaseListPresenter;
 import com.xilingyuli.androidtips.blog.editor.EditorActivity;
+import com.xilingyuli.androidtips.model.CloudDataHelper;
 import com.xilingyuli.androidtips.utils.FileUtil;
 
 import java.io.File;
@@ -24,37 +27,14 @@ import static com.xilingyuli.androidtips.blog.editor.EditorActivity.TITLE;
  * Created by xilingyuli on 2017/3/13.
  */
 
-class DraftListPresenter implements BlogListContract.Presenter {
-
-    private Activity activity;
-    private BlogListContract.View view;
+class DraftListPresenter extends BaseListPresenter implements BlogListContract.Presenter {
 
     DraftListPresenter(Activity activity, BlogListContract.View view){
-        this.activity = activity;
-        this.view = view;
+        super(activity,view, CloudDataHelper.ACTION_LIST_BLOG);
     }
 
     @Override
-    public void subscribe() {
-        refresh();
-    }
-
-    @Override
-    public void unsubscribe() {
-
-    }
-
-    public void refresh()
-    {
-        requestData(true);
-    }
-
-    public void nextPage()
-    {
-        requestData(false);
-    }
-
-    private void requestData(boolean isRefresh){
+    protected void requestData(boolean isRefresh){
         File[] files = FileUtil.listFiles("md");
         List<Map<String, String>> data = new ArrayList<>();
         for(File file : files){
@@ -69,6 +49,11 @@ class DraftListPresenter implements BlogListContract.Presenter {
     }
 
     @Override
+    protected void dealData(boolean isRefresh, COSResult cosResult){
+
+    }
+
+    @Override
     public void viewBlog(String name, String url) {
         Intent intent = new Intent(activity, EditorActivity.class);
         intent.putExtra(TITLE,name.replace(".md",""));
@@ -78,7 +63,7 @@ class DraftListPresenter implements BlogListContract.Presenter {
 
     @Override
     public void operateBlog(String name) {
-        view.showChooseOperationDialog(name);
+        ((BlogListContract.View)view).showChooseOperationDialog(name);
     }
 
     @Override
