@@ -8,12 +8,13 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.xilingyuli.androidtips.R;
+import com.xilingyuli.androidtips.basemvp.BaseActivity;
 import com.xilingyuli.markdown.MarkDownPreviewView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ReadBlogActivity extends AppCompatActivity implements ReadBlogContract.View {
+public class ReadBlogActivity extends BaseActivity implements ReadBlogContract.View {
 
     public static final String BLOG_NAME = "name";
     public static final String BLOG_URL = "url";
