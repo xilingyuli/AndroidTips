@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity
     DrawerLayout drawer;
 
     private BlogListFragment blogListFragment,draftListFragment;
-    private SiteListFragment siteListFragment;
+    private SiteListFragment siteListFragment,favoriteListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity
         //init fragments
         blogListFragment = BlogListFragment.newInstance(false);
         draftListFragment  = BlogListFragment.newInstance(true);
-        siteListFragment = SiteListFragment.newInstance();
+        siteListFragment = SiteListFragment.newInstance(false);
+        favoriteListFragment = SiteListFragment.newInstance(true);
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.content_main, blogListFragment).commit();
@@ -65,6 +66,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_site:
                 siteListFragment.showAddSiteDialog();
+                break;
+            case R.id.nav_favorite:
+                favoriteListFragment.showAddSiteDialog();
                 break;
         }
     }
@@ -94,6 +98,10 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_site:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.content_main, siteListFragment).commit();
+                break;
+            case R.id.nav_favorite:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_main, favoriteListFragment).commit();
                 break;
         }
         drawer.closeDrawer(GravityCompat.START);

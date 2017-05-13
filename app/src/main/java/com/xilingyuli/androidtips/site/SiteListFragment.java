@@ -2,6 +2,8 @@ package com.xilingyuli.androidtips.site;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -19,10 +21,12 @@ import android.widget.Toast;
 
 import com.xilingyuli.androidtips.R;
 import com.xilingyuli.androidtips.blog.editor.EditorActivity;
+import com.xilingyuli.androidtips.widget.WebViewActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Inflater;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,18 +45,27 @@ public class SiteListFragment extends Fragment implements SiteListContract.View{
     SimpleAdapter adapter;
     List<Map<String,String>> data;
 
+    private boolean isFavorite = false;
+
     public SiteListFragment() {
         // Required empty public constructor
     }
 
-    public static SiteListFragment newInstance() {
-        return new SiteListFragment();
+    public static SiteListFragment newInstance(boolean isFavorite) {
+        SiteListFragment fragment = new SiteListFragment();
+        fragment.setFavorite(isFavorite);
+        return fragment;
+    }
+
+    private void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setPresenter(new SiteListPresenter(getActivity(),this));
+        SiteListContract.Presenter presenter = isFavorite?new FavoriteListPresenter(getActivity(),this):new SiteListPresenter(getActivity(),this);
+        setPresenter(presenter);
         data = new ArrayList<>();
         adapter = new SimpleAdapter(
                 getActivity(),
@@ -70,7 +83,10 @@ public class SiteListFragment extends Fragment implements SiteListContract.View{
         ButterKnife.bind(this, view);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener((adapterView, view1, i, l) -> {
-
+            Intent intent = new Intent(getActivity(), WebViewActivity.class);
+            intent.putExtra("url",data.get(i).get("furl"));
+            //intent.setData(Uri.parse(data.get(i).get("furl")));
+            startActivity(intent);
         });
         return view;
     }

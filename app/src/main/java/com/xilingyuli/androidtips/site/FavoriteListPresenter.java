@@ -23,10 +23,10 @@ import java.util.Map;
  * Created by xilingyuli on 2017/3/23.
  */
 
-public class SiteListPresenter extends BaseListPresenter implements SiteListContract.Presenter {
+public class FavoriteListPresenter extends BaseListPresenter implements SiteListContract.Presenter {
 
-    SiteListPresenter(Activity activity, BaseListContract.View view) {
-        super(activity, view, CloudDataHelper.ACTION_LIST_SITE);
+    FavoriteListPresenter(Activity activity, BaseListContract.View view) {
+        super(activity, view, CloudDataHelper.ACTION_LIST_FAVORITE);
     }
 
     @SuppressWarnings("deprecation")
@@ -47,11 +47,11 @@ public class SiteListPresenter extends BaseListPresenter implements SiteListCont
         if(client==null)
             client = CloudDataUtil.createCOSClient(activity);
         PutObjectRequest request = (PutObjectRequest) CloudDataHelper.createCOSRequest(
-                CloudDataHelper.ACTION_UPLOAD_SITE,
+                CloudDataHelper.ACTION_UPLOAD_FAVORITE,
                 new ICmdTaskListener() {
                     @Override
                     public void onSuccess(COSRequest cosRequest, COSResult cosResult) {
-                        activity.runOnUiThread(SiteListPresenter.this::refresh);
+                        activity.runOnUiThread(FavoriteListPresenter.this::refresh);
                     }
 
                     @Override

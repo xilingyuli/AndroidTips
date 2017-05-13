@@ -25,8 +25,11 @@ public class CloudDataHelper{
     public static final String ACTION_LIST_SITE = "ACTION_LIST_SITE";
     public static final String ACTION_UPLOAD_SITE = "ACTION_UPLOAD_SITE";
 
+    public static final String ACTION_LIST_FAVORITE = "ACTION_LIST_FAVORITE";
+    public static final String ACTION_UPLOAD_FAVORITE = "ACTION_UPLOAD_FAVORITE";
+
     public enum OBJECT_TYPE {
-        IMAGE("images"), BLOG("blogs"), SITE("sites");
+        IMAGE("images"), BLOG("blogs"), SITE("sites"), FAVORITE("favorite");
         public final String path;
         OBJECT_TYPE(String path) {
             this.path = path;
@@ -50,6 +53,10 @@ public class CloudDataHelper{
                 return createListDirRequest((ITaskListener)params[1], OBJECT_TYPE.SITE, (String)params[2]);
             case ACTION_UPLOAD_SITE:
                 return createUpdateObjectRequest((ITaskListener)params[1], OBJECT_TYPE.SITE, (File)params[2], true);
+            case ACTION_LIST_FAVORITE:
+                return createListDirRequest((ITaskListener)params[1], OBJECT_TYPE.FAVORITE, (String)params[2]);
+            case ACTION_UPLOAD_FAVORITE:
+                return createUpdateObjectRequest((ITaskListener)params[1], OBJECT_TYPE.FAVORITE, (File)params[2], true);
         }
         return null;
     }
