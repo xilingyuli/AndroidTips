@@ -7,4 +7,10 @@
         android:orderInCategory="100"
         android:title="收藏"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/open_in_browser"
+        android:icon="@drawable/ic_open_in_browser_white_24dp"
+        android:orderInCategory="100"
+        android:title="打开"
+        app:showAsAction="always" />
 </menu>
